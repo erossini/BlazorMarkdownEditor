@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon>psc_logo.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>psc_logo.png</PackageIcon>
+    <PackageIconUrl />
+    <Authors>Enrico Rossini</Authors>
+    <Company>Enrico Rossini - PureSourceCode.com</Company>
+    <Description>Another Markdown editor for Blazor</Description>
+    <RepositoryUrl>https://github.com/erossini/BlazorMarkdownEditor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>blazor, blazor-webassembly, blazor-server</PackageTags>
+    <PackageReleaseNotes>Simple Markdown editor with preview</PackageReleaseNotes>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.26.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="psc_logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+﻿@page "/"
+
+<EditForm OnValidSubmit="DoSave" Model="form">
+    <MarkdownEditor id="markdown-editor" @bind-Value="form.MarkdownText" />
+</EditForm>
+
+@code { 
+    FormData form = new FormData();
+
+    private void DoSave()
+    {
+
+    }
+}
