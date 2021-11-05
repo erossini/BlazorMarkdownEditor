@@ -1,6 +1,8 @@
 # Blazor Markdown Editor
 This is a Markdown Editor for use in Blazor. It contains a live preview as well as an embeded help guide for users.
 
+For the explanation please visit my blog [PureSourceCode](https://www.puresourcecode.com) at this [link](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-with-blazor/).
+
 ## Usage
 
 Add the Editor to your ```_Imports.razor```
