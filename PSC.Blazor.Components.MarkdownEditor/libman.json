@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "easymde@2.15.0",
+      "destination": "wwwroot/easymde/"
+    }
+  ]
+}

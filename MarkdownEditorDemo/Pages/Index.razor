@@ -1,14 +1,85 @@
 ﻿@page "/"
 
-<EditForm OnValidSubmit="DoSave" Model="form">
-    <MarkdownEditor id="markdown-editor" @bind-Value="form.MarkdownText" />
-</EditForm>
+<div class="col-md-12">
+    <MarkdownEditor Value="@markdownValue" ValueChanged="@OnMarkdownValueChanged"
+                    ImageUploadEndpoint="https://localhost:7013/api/Image"
+                    ImageUploadChanged="@OnImageUploadChanged"
+                    ImageUploadStarted="@OnImageUploadStarted"
+                    ImageUploadProgressed="@OnImageUploadProgressed"
+                    ImageUploadEnded="@OnImageUploadEnded" />
 
-@code { 
-    FormData form = new FormData();
+    <hr />
 
-    private void DoSave()
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+</div>
+
+@code {
+    string markdownValue = "# EasyMDE \n Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, [links](https://google.com) and all the other features. You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
+    string markdownHtml;
+
+    protected override void OnInitialized()
     {
+        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
 
+        base.OnInitialized();
+    }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        markdownValue = value;
+
+        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
+
+        return Task.CompletedTask;
+    }
+
+    async Task OnImageUploadChanged(FileChangedEventArgs e)
+    {
+        try
+        {
+            foreach ( var file in e.Files )
+            {
+                using ( var stream = new System.IO.MemoryStream() )
+                {
+                    //await file.WriteToStreamAsync( stream );
+
+                    // do something with the stream
+                }
+            }
+        }
+        catch ( Exception exc )
+        {
+            Console.WriteLine( exc.Message );
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    Task OnImageUploadStarted( FileStartedEventArgs e )
+    {
+        Console.WriteLine( $"Started Image: {e.File.Name}" );
+
+        return Task.CompletedTask;
+    }
+
+    Task OnImageUploadProgressed( FileProgressedEventArgs e )
+    {
+        Console.WriteLine( $"Image: {e.File.Name} Progress: {(int)e.Percentage}" );
+
+        return Task.CompletedTask;
+    }
+
+    Task OnImageUploadEnded( FileEndedEventArgs e )
+    {
+        // We need to report back to Markdown that upload is done. We do this by setting the UploadUrl.
+        // NOTE: Since we're faking the upload in this demo we will just set some dummy UploadUrl.
+        e.File.UploadUrl = "https://images.pexels.com/photos/4966601/pexels-photo-4966601.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200";
+
+        Console.WriteLine( $"Finished Image: {e.File.Name}, Success: {e.Success}" );
+
+        return Task.CompletedTask;
     }
 }
