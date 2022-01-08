@@ -6,29 +6,32 @@ This is a Markdown Editor for use in Blazor. It contains a live preview as well 
 Add the Editor to your ```_Imports.razor```
 
 ```
-@using PSC.Blazor.Components.MarkdownEditor
+@using PSC.Blazor.Components.MarkdownEditor 
+@using PSC.Blazor.Components.MarkdownEditor.EventsArgs
 ```
 
-Then, inside of an `EditForm` reference the editor component and bind it.
+Then, in your `index.html` or `host.html` add those lines:
 
 ```
-<EditForm OnValidSubmit="DoSave" Model="model">
-    <MarkdownEditor @bind-Value="model.Comments"/>
-</EditForm>
+<link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
+
+<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
+<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-The editor binds the markdown text, not parsed HTML.
+The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
-The toolbar is added by default.  You can disable this by passing `EnableToolbar="false"` into the component.
+### Add MarkdownEditor in a page
 
-### Screenshot
+In a `Razor` page, we can add the component with this lines
 
-**Write Markdown text**
-![image](https://user-images.githubusercontent.com/9497415/140496482-719e6b90-dcee-4547-b6b1-e5a4c7836e77.png)
+```
+<MarkdownEditor Value="@markdownValue" ValueChanged="@OnMarkdownValueChanged" />
+```
 
-**Preview**
-![image](https://user-images.githubusercontent.com/9497415/140496580-47569d20-ff3f-4f57-bd03-98e3ac0906ba.png)
+The result is a nice Markdown Editor like in the following screenshot.
 
+![markdown-editor-example](https://user-images.githubusercontent.com/9497415/148641050-653f6101-7099-4d76-9a59-45a44e32a275.gif)
 
 ## Other Blazor components
 - [DataTable for Blazor](https://www.puresourcecode.com/dotnet/net-core/datatable-component-for-blazor/): DataTable component for Blazor WebAssembly and Blazor Server
