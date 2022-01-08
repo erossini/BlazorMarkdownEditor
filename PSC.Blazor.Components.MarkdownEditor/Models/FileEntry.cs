@@ -11,27 +11,27 @@ namespace PSC.Blazor.Components.MarkdownEditor.Models
         /// <summary>
         /// Gets the file-entry id.
         /// </summary>
-        public int Id { get; }
+        public int id { get; }
 
         /// <summary>
         /// Returns the last modified time of the file.
         /// </summary>
-        public DateTime LastModified { get; }
+        public DateTime lastModified { get; set; }
 
         /// <summary>
         /// Returns the name of the file.
         /// </summary>
-        public string Name { get; }
+        public string name { get; set; }
 
         /// <summary>
         /// Returns the size of the file in bytes.
         /// </summary>
-        public long Size { get; }
+        public long size { get; set; }
 
         /// <summary>
         /// Returns the MIME type of the file.
         /// </summary>
-        public string Type { get; }
+        public string type { get; set; }
 
         /// <summary>
         /// Provides a way to tell the location of the uploaded file or image.
@@ -42,5 +42,9 @@ namespace PSC.Blazor.Components.MarkdownEditor.Models
         /// Provides a way to tell if any error happened.
         /// </summary>
         public string ErrorMessage { get; set; }
+
+        public string ElementId { get; set; }
+
+        public string contentBase64 { get; set; }
     }
 }

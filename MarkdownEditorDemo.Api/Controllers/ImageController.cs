@@ -7,12 +7,21 @@ namespace MarkdownEditorDemo.Api.Controllers
     public class ImageController : Controller
     {
         [HttpPost]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(IFormFile files)
         {
-            var f = Request.ContentType;
-            var l = Request.Body;
+            long size = files.Length;
 
-            return Ok("");
+            var filePath = Path.GetTempFileName();
+
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await files.CopyToAsync(stream);
+            }
+
+            // Process uploaded files
+            // Don't rely on or trust the FileName property without validation.
+
+            return Ok();
 
             //// Check if thefile is there
             //if (file == null)

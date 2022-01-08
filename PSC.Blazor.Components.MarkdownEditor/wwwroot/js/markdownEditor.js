@@ -79,25 +79,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
             imageUploadNotifier.onSuccess = onSuccess;
             imageUploadNotifier.onError = onError;
 
-            // Reduce to purely serializable data, plus build an index by ID
-            //element._blazorFilesById = {};
-
-            var fileEntry = {
-                id: ++nextFileId,
-                lastModified: new Date(file.lastModified).toISOString(),
-                name: file.name,
-                size: file.size,
-                type: file.type
-            };
-
-            //element._blazorFilesById[fileEntry.id] = fileEntry;
-
-            // Attach the blob data itself as a non-enumerable property so it doesn't appear in the JSON
-            //Object.defineProperty(fileEntry, 'blob', { value: file });
-
-            dotNetObjectRef.invokeMethodAsync('NotifyImageUpload', fileEntry).then(null, function (err) {
-                throw new Error(err);
-            });
+            NotifyUploadImage(elementId, file, dotNetObjectRef);
         },
 
         errorMessages: options.errorMessages,
@@ -155,4 +137,36 @@ function notifyImageUploadError(elementId, errorMessage) {
     if (instance) {
         return instance.imageUploadNotifier.onError(errorMessage);
     }
+}
+
+function _arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+}
+
+async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
+    var arrBuffer = await file.arrayBuffer();
+    console.log(arrBuffer);
+
+    const a = await arrBuffer;
+    var arrBf = _arrayBufferToBase64(a);
+
+    var fileEntry = {
+        elementId: elementId,
+        lastModified: new Date(file.lastModified).toISOString(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        contentBase64: arrBf
+    };
+    console.log(fileEntry);
+
+    dotNetObjectRef.invokeMethodAsync('NotifyImageUpload', fileEntry).then(null, function (err) {
+        throw new Error(err);
+    });
 }

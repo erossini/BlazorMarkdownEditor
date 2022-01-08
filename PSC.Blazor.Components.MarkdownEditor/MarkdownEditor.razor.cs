@@ -356,47 +356,20 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public async Task NotifyImageUpload(FileEntry file)
         {
             if (ImageUploadChanged is not null)
-            {
                 await ImageUploadChanged.Invoke(new(file));
-                await ImageUploadStarted.Invoke(new(file));
-            }
 
             await InvokeAsync(StateHasChanged);
         }
-
-        // Define the variables which is the stream that represents the file
-        private readonly Stream _fileStream;
 
         public Task UpdateFileStartedAsync(FileEntry fileEntry)
         {
             // reset all
             ProgressProgress = 0;
-            ProgressTotal = fileEntry.Size;
+            ProgressTotal = fileEntry.size;
             Progress = 0;
 
             if (ImageUploadStarted is not null)
                 return ImageUploadStarted.Invoke(new(fileEntry));
-
-            // Create a mutlipart form data content which will hold the key value of the file that must be of type StreamContent
-            var content = new MultipartFormDataContent();
-
-            // Create an instance of ProgressiveStreamContent that we just created and we will pass the stream of the file for it
-            // and the 40096 which are 40KB per packet and the third argument which as a callback for the OnProgress event (u, p) are u = Uploaded bytes and P is the percentage
-            var streamContent = new ProgressiveStreamContent(_fileStream, 40096, (u, p) =>
-            {
-                // Set the values of the _uploaded & _percentage fields to the value provided from the event
-                ProgressProgress = u;
-                Progress = p;
-
-                // Call StateHasChanged() to notify the component about this change to re-render the UI
-                StateHasChanged();
-            });
-
-            // Add the streamContent with the name to the FormContent variable
-            content.Add(streamContent, "File");
-
-            // Submit the request
-            //var response = await Client.PostAsync("/weatherforecast", streamContent);
 
             return Task.CompletedTask;
         }
