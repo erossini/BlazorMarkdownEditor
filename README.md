@@ -1,5 +1,5 @@
 # Blazor Markdown Editor
-This is a Markdown Editor for use in Blazor. It contains a live preview as well as an embeded help guide for users.
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/). The component is based on [EasyMDE](https://easy-markdown-editor.tk/) to create the editor and [Markdig](https://github.com/xoofx/markdig) for rendering the Markdown text in HTML.
 
 ## Usage
 
@@ -32,6 +32,9 @@ In a `Razor` page, we can add the component with this lines
 The result is a nice Markdown Editor like in the following screenshot.
 
 ![markdown-editor-example](https://user-images.githubusercontent.com/9497415/148641050-653f6101-7099-4d76-9a59-45a44e32a275.gif)
+
+## Limitation
+In the current implementation, some Markdig extensions are not working. For example, adding a `mermaid` code, won't create a graph.
 
 ## Other Blazor components
 - [DataTable for Blazor](https://www.puresourcecode.com/dotnet/net-core/datatable-component-for-blazor/): DataTable component for Blazor WebAssembly and Blazor Server
