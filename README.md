@@ -19,7 +19,7 @@ Then, in your `index.html` or `host.html` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+`jQuery` is required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 ### Add MarkdownEditor in a page
 
