@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "easymde@2.15.0",
+      "destination": "wwwroot/easymde/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "simplemde@1.11.2",
+      "destination": "wwwroot/lib/simplemde/"
+    }
+  ]
+}
