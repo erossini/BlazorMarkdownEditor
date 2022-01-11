@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSC.Blazor.Components.Markd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownEditorDemo", "MarkdownEditorDemo\MarkdownEditorDemo.csproj", "{4A71D48E-5A73-49F6-B813-2919DB84DC29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownEditorDemo.Api", "MarkdownEditorDemo.Api\MarkdownEditorDemo.Api.csproj", "{9771B329-8344-4839-81D5-78B9F9AA79F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownEditorDemo.Api", "MarkdownEditorDemo.Api\MarkdownEditorDemo.Api.csproj", "{9771B329-8344-4839-81D5-78B9F9AA79F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other files", "Other files", "{E62D6583-788F-4BDE-833F-6EE650453874}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

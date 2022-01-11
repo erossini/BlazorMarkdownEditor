@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PSC.Blazor.Components.MarkdownEditor.Models
+﻿namespace PSC.Blazor.Components.MarkdownEditor.Models
 {
+    /// <summary>
+    /// File Entry model
+    /// </summary>
     public class FileEntry
     {
         /// <summary>
         /// Gets the file-entry id.
         /// </summary>
-        public int id { get; }
+        public int Id { get; }
 
         /// <summary>
         /// Returns the last modified time of the file.
         /// </summary>
-        public DateTime lastModified { get; set; }
+        public DateTime LastModified { get; set; }
 
         /// <summary>
         /// Returns the name of the file.
         /// </summary>
-        public string name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Returns the size of the file in bytes.
         /// </summary>
-        public long size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// Returns the MIME type of the file.
         /// </summary>
-        public string type { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// Provides a way to tell the location of the uploaded file or image.
@@ -43,8 +40,9 @@ namespace PSC.Blazor.Components.MarkdownEditor.Models
         /// </summary>
         public string ErrorMessage { get; set; }
 
-        public string ElementId { get; set; }
-
-        public string contentBase64 { get; set; }
+        /// <summary>
+        /// Gets or sets the content base64.
+        /// </summary>
+        public string ContentBase64 { get; set; }
     }
 }

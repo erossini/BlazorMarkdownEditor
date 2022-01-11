@@ -1,5 +1,10 @@
 namespace PSC.Blazor.Components.MarkdownEditor
 {
+    /// <summary>
+    /// Markdown Toolbar Button
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
+    /// <seealso cref="System.IDisposable" />
     public partial class MarkdownToolbarButton : IDisposable
     {
         /// <summary>

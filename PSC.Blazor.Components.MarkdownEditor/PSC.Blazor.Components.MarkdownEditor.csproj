@@ -13,6 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>blazor, blazor-webassembly, blazor-server</PackageTags>
     <PackageReleaseNotes>Simple Markdown editor with preview</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   
@@ -27,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="psc_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

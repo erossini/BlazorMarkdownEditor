@@ -67,7 +67,9 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         toolbar: options.toolbar,
         toolbarTips: options.toolbarTips,
 
-        uploadImage: true,
+        autosave: options.autoSave,
+
+        uploadImage: options.uploadImage,
         imageMaxSize: options.imageMaxSize,
         imageAccept: options.imageAccept,
         imageUploadEndpoint: options.imageUploadEndpoint,
@@ -75,7 +77,6 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         imageCSRFToken: options.imageCSRFToken,
         imageTexts: options.imageTexts,
         imageUploadFunction: (file, onSuccess, onError) => {
-            // hack to save the reference to the callback functions
             imageUploadNotifier.onSuccess = onSuccess;
             imageUploadNotifier.onError = onError;
 
@@ -151,22 +152,26 @@ function _arrayBufferToBase64(buffer) {
 
 async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
     var arrBuffer = await file.arrayBuffer();
-    console.log(arrBuffer);
 
     const a = await arrBuffer;
     var arrBf = _arrayBufferToBase64(a);
 
     var fileEntry = {
-        elementId: elementId,
         lastModified: new Date(file.lastModified).toISOString(),
         name: file.name,
         size: file.size,
         type: file.type,
-        contentBase64: arrBf
+        contentbase64: arrBf
     };
-    console.log(fileEntry);
 
     dotNetObjectRef.invokeMethodAsync('NotifyImageUpload', fileEntry).then(null, function (err) {
         throw new Error(err);
+    });
+
+    dotNetObjectRef.invokeMethodAsync('UploadFile', fileEntry).then(r => {
+        if (!r || r.length === 0)
+            notifyImageUploadError(elementId, "Upload error");
+        else
+            notifyImageUploadSuccess(elementId, r);
     });
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PSC.Blazor.Components.MarkdownEditor.EventsArgs
+﻿namespace PSC.Blazor.Components.MarkdownEditor.EventsArgs
 {
     /// <summary>
     /// Supplies the information about the data being written while uploading.

@@ -1,0 +1,71 @@
+﻿@page "/upload"
+@using PSC.Blazor.Components.MarkdownEditor.Models
+@using System.Net.Http.Headers
+
+<div class="col-md-12">
+    <MarkdownEditor AutoSaveEnabled="true" AutoSaveId="UploadPage"
+                    Value="@markdownValue" ValueChanged="@OnMarkdownValueChanged"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    ImageUploadEndpoint="https://localhost:7013/api/files"
+                    ImageUploadChanged="@OnImageUploadChanged"
+                    ImageUploadStarted="@OnImageUploadStarted"
+                    ImageUploadProgressed="@OnImageUploadProgressed"
+                    ImageUploadEnded="@OnImageUploadEnded"
+                    UploadImage="true" />
+
+    <hr />
+
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+</div>
+
+@code {
+    string markdownValue = "# Markdown Editor for Blazor\nThis component is using [EasyMDE](https://easy-markdown-editor.tk/) " +
+                                           "to display a nice editor and all functionalities are mapped. See the documentation for more details.\n\n" +
+                                           "Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, " +
+                                           "[links](https://google.com) and all the other features. " +
+                                           "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
+    string markdownHtml;
+
+    protected override void OnInitialized()
+    {
+        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
+
+        base.OnInitialized();
+    }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        markdownValue = value;
+        return Task.CompletedTask;
+    }
+
+    async Task OnImageUploadChanged(FileChangedEventArgs e)
+    {
+        this.StateHasChanged();
+    }
+
+    Task OnImageUploadStarted(FileStartedEventArgs e)
+    {
+        Console.WriteLine($"Started Image: {e.File.Name}");
+        return Task.CompletedTask;
+    }
+
+    Task OnImageUploadProgressed(FileProgressedEventArgs e)
+    {
+        Console.WriteLine($"Image: {e.File.Name} Progress: {(int)e.Percentage}");
+        return Task.CompletedTask;
+    }
+
+    Task OnImageUploadEnded(FileEndedEventArgs e)
+    {
+        Console.WriteLine($"Finished Image: {e.File.Name}, Success: {e.Success}");
+        return Task.CompletedTask;
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+}

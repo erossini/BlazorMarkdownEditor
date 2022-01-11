@@ -48,3 +48,16 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+img {
+    max-width: 100%;
+}
+
+table {
+    margin-bottom: 15px;
+}
+
+table td, table th {
+    border: 1px solid #ddd;
+    padding: 5px;
+}

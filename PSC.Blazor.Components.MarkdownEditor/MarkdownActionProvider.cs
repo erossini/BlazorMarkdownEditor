@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PSC.Blazor.Components.MarkdownEditor
+﻿namespace PSC.Blazor.Components.MarkdownEditor
 {
     /// <summary>
     /// Provider for the <see cref="MarkdownAction"/>.
@@ -114,6 +108,11 @@ namespace PSC.Blazor.Components.MarkdownEditor
             };
         }
 
+        /// <summary>
+        /// Serializes the specified buttons.
+        /// </summary>
+        /// <param name="buttons">The buttons.</param>
+        /// <returns></returns>
         public static IEnumerable<object> Serialize(List<MarkdownToolbarButton> buttons)
         {
             foreach (var button in buttons)
