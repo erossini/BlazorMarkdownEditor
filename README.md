@@ -1,6 +1,8 @@
 # Blazor Markdown Editor
 This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) to create the editor and [Markdig](https://github.com/xoofx/markdig) for rendering the Markdown text in HTML.
 
+![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
+
 ## Usage
 
 Add the Editor to your ```_Imports.razor```
