@@ -5,7 +5,8 @@ This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresou
 
 ## Usage
 
-Add the Editor to your ```_Imports.razor```
+In your Blazor project, add the NuGet package called [PSC.Blazor.Components.MarkdownEditor](https://www.nuget.org/packages/PSC.Blazor.Components.MarkdownEditor/).
+Then, add the Markdown Editor to your ```_Imports.razor```
 
 ```
 @using PSC.Blazor.Components.MarkdownEditor 
@@ -21,7 +22,7 @@ Then, in your `index.html` or `host.html` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-`jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+`jQuery` is also required. The component contains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 ### Add MarkdownEditor in a page
 
