@@ -14,15 +14,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         private DotNetObjectReference<MarkdownEditor> dotNetObjectRef;
 
         /// <summary>
-        /// Gets or sets the HTTP client.
-        /// </summary>
-        /// <value>
-        /// The HTTP client.
-        /// </value>
-        [Inject]
-        public HttpClient _httpClient { get; set; }
-
-        /// <summary>
         /// Gets or sets the <see cref = "JSMarkdownInterop"/> instance.
         /// </summary>
         protected JSMarkdownInterop JSModule { get; private set; }
@@ -588,7 +579,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 bool success = false;
                 try
                 {
-                    var response = await _httpClient.PostAsync(ImageUploadEndpoint, form);
+                    var response = await httpClient.PostAsync(ImageUploadEndpoint, form);
                     response.EnsureSuccessStatusCode();
 
                     await ImageUploadProgressed.Invoke(new(fileInfo, 100));
