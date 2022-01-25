@@ -90,6 +90,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     });
 
     easyMDE.codemirror.on("change", function () {
+        console.log(easyMDE.value());
         dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", easyMDE.value());
     });
 

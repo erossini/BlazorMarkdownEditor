@@ -4,6 +4,8 @@ For more documentation and help this component, visit the post I created [here](
 
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
 
+[Try Markdown Editor online](http://markdown.puresourcecode.com/) (upload is not enabled)
+
 ## Usage
 
 Add the Editor to your ```_Imports.razor```
@@ -30,8 +32,7 @@ In a `Razor` page, we can add the component with these lines
 
 ```
 <div class="col-md-12">
-    <MarkdownEditor Value="@markdownValue" 
-                    ValueChanged="@OnMarkdownValueChanged"
+    <MarkdownEditor @bind-Value="@markdownValue" 
                     ValueHTMLChanged="@OnMarkdownValueHTMLChanged" />
 
     <hr />
