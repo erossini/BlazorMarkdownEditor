@@ -12,8 +12,10 @@
     <RepositoryUrl>https://github.com/erossini/BlazorMarkdownEditor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>blazor, blazor-webassembly, blazor-server</PackageTags>
-    <PackageReleaseNotes>Simple Markdown editor with preview</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix the bindable Value</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/</PackageProjectUrl>
+    <Copyright>Enrico Rossini - PureSourceCode.com</Copyright>
   </PropertyGroup>
 
   

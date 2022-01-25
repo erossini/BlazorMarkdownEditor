@@ -404,7 +404,17 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Gets or sets the markdown value.
         /// </summary>
         [Parameter]
-        public string Value { get; set; }
+        public string Value {
+            get => _value;
+            set
+            {
+                if (_value == value) return;
+                _value = value;
+
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+        private string _value;
 
         /// <summary>
         /// Gets or sets the HTML from markdown value.
@@ -531,15 +541,15 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// <param name = "value">New value.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         [JSInvokable]
-        public Task UpdateInternalValue(string value)
+        public async Task UpdateInternalValue(string value)
         {
             Value = value;
 
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             ValueHTML = Markdown.ToHtml(value ?? string.Empty, pipeline);
 
-            ValueHTMLChanged.InvokeAsync(ValueHTML);
-            return ValueChanged.InvokeAsync(Value);
+            await ValueHTMLChanged.InvokeAsync(ValueHTML);
+            await ValueChanged.InvokeAsync(value);
         }
 
         /// <summary>
