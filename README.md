@@ -191,6 +191,38 @@ Shortcut (Windows / Linux) | Shortcut (macOS) | Action
 
 ---
 
+## Licence and contribution
+A lot of people sent me the same question. My components ([MarkdownEditor](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor), [DataTable](https://www.puresourcecode.com/dotnet/net-core/datatable-component-for-blazor), [SVG Icon](https://www.puresourcecode.com/dotnet/blazor/svg-icons-and-flags-for-blazor) and others that you find on my [GitHub](https://github.com/erossini)) are freeware. 
+
+I ask you to contribute to the project in one of the following ways:
+
+- sending your feedback
+- highlight bugs
+- ask for improvement
+- submit code and fixes
+- share the project
+- share my website [PureSourceCode.com](https://www.puresourcecode.com/)
+
+If you don't know how to do it or you:
+
+- want to support this project
+- find very useful this project and it saves you a lot of time and work
+- like to sustain my work
+- want to pay my a beer
+- are using this component for commercial purpose and you want to set your conscience at rest and/or put a hand on one's heart 😂
+
+then, you can buy one of the support licence I created. There are different prices. The amount is your decision. You find have a full list on [PureSourceCode Shop](https://www.puresourcecode.com/shop)
+
+The contribution gives you:
+
+- dedicate email support
+- priority access to the support
+- fast bug fix
+- receive preview and beta of the components
+- help to fix your code with [Visual Studio Live Share](https://www.puresourcecode.com/tools/a-guide-to-remote-development-with-visual-studio-live-share/)
+    
+---
+    
 ## Other Blazor components
 
 | Component name | Forum | Description |
