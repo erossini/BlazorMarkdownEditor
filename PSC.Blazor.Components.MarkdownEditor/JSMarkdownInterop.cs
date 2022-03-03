@@ -10,6 +10,8 @@
         /// </summary>
         IJSRuntime jsRuntime;
 
+        private readonly Lazy<Task<IJSObjectReference>> moduleTask;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JSMarkdownInterop"/> class.
         /// </summary>
@@ -17,6 +19,29 @@
         public JSMarkdownInterop(IJSRuntime JSRuntime)
         {
             this.jsRuntime = JSRuntime;
+
+            moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>("import",
+                "./_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js").AsTask());
+        }
+
+        /// <summary>
+        /// Adds the js.
+        /// </summary>
+        /// <param name="targetUrl">The target URL.</param>
+        /// <returns></returns>
+        public async ValueTask AddJS(string targetUrl)
+        {
+            await jsRuntime.InvokeVoidAsync("loadJs", targetUrl);
+        }
+
+        /// <summary>
+        /// Adds the CSS.
+        /// </summary>
+        /// <param name="targetUrl">The target URL.</param>
+        /// <returns></returns>
+        public async ValueTask AddCSS(string targetUrl)
+        {
+            await jsRuntime.InvokeVoidAsync("loadCSS", targetUrl);
         }
 
         /// <summary>

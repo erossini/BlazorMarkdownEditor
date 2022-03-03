@@ -24,7 +24,7 @@ Then, in your `index.html` or `host.html` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.15.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.16.1. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 ### Add MarkdownEditor in a page
 
@@ -104,9 +104,11 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 |MaxHeight|Sets fixed height for the composition area. minHeight option will be ignored. Should be a string containing a valid CSS value like "500px". Defaults to undefined.|string||
 |MaxUploadImageMessageSize|Gets or sets the max message size when uploading the file.|long|20 * 1024|
 |MinHeight|Sets the minimum height for the composition area, before it starts auto-growing. Should be a string containing a valid CSS value like "500px". Defaults to "300px".|string|300px|
+|NativeSpellChecker|Enable (true) or disable (false) the spell check in the editor|bool|True|
 |Placeholder|If set, displays a custom placeholder message.|string|null|
 |SegmentFetchTimeout|Gets or sets the Segment Fetch Timeout when uploading the file.|TimeSpan|1 min|
 |ShowIcons|An array of icon names to show. Can be used to show specific icons hidden by default without completely customizing the toolbar.|string[]|'code', 'table'|
+|SpellChecker|Enable (true) or disable (false) the spell check in the editor|bool|True|
 |TabSize|If set, customize the tab size. Defaults to 2.|int|2|
 |Theme|Override the theme. Defaults to easymde.|string|easymde|
 |Toolbar|[Optional] Gets or sets the content of the toolbar.|RenderFragment||
