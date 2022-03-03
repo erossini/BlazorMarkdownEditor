@@ -4,7 +4,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
     /// Markdown Editor
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
-    public partial class MarkdownEditor
+    public partial class MarkdownEditor : IDisposable
     {
         #region Inject and JavaScript
 
@@ -17,8 +17,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Gets or sets the <see cref = "JSMarkdownInterop"/> instance.
         /// </summary>
         protected JSMarkdownInterop JSModule { get; private set; }
-        #endregion Inject and JavaScript
 
+        #endregion Inject and JavaScript
         #region Element references
 
         /// <summary>
@@ -343,6 +343,15 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public int MaxUploadImageChunkSize { get; set; } = 20 * 1024;
 
         /// <summary>
+        /// Gets or sets a value indicating whether native spell checker is enable or not
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [native spell checker]; otherwise, <c>false</c>.
+        /// </value>
+        [Parameter]
+        public bool NativeSpellChecker { get; set; } = true;
+
+        /// <summary>
         /// Sets the minimum height for the composition area, before it starts auto-growing.
         /// Should be a string containing a valid CSS value like "500px". Defaults to "300px".
         /// </summary>
@@ -367,6 +376,15 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </summary>
         [Parameter]
         public string[] ShowIcons { get; set; } = new[] { "code", "table" };
+
+        /// <summary>
+        /// Gets or sets a value indicating whether spell checker is enable or nor
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [spell checker]; otherwise, <c>false</c>.
+        /// </value>
+        [Parameter]
+        public bool SpellChecker { get; set; } = true;
 
         /// <summary>
         /// If set, customize the tab size. Defaults to 2.
@@ -650,6 +668,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
             if (firstRender)
             {
+                if (JSModule == null)
+                    JSModule = new JSMarkdownInterop(JSRuntime);
+
                 dotNetObjectRef ??= DotNetObjectReference.Create(this);
 
                 await JSModule.Initialize(dotNetObjectRef, ElementRef, ElementId, new
@@ -686,6 +707,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     TabSize,
                     Theme,
                     Direction,
+                    NativeSpellChecker,
+                    SpellChecker,
                     Toolbar = Toolbar != null && toolbarButtons?.Count > 0 ? MarkdownActionProvider.Serialize(toolbarButtons) : null,
                     ToolbarTips,
                     UploadImage,
@@ -717,15 +740,21 @@ namespace PSC.Blazor.Components.MarkdownEditor
         protected override void OnInitialized()
         {
             if (JSModule == null)
-            {
                 JSModule = new JSMarkdownInterop(JSRuntime);
-            }
 
             ElementId = $"markdown-{Guid.NewGuid()}";
             if (string.IsNullOrEmpty(AutoSaveId))
                 AutoSaveId = ElementId;
 
             base.OnInitialized();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            JSModule?.Destroy(ElementRef, ElementId);
         }
     }
 }

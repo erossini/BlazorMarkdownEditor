@@ -66,6 +66,8 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         direction: options.direction,
         toolbar: options.toolbar,
         toolbarTips: options.toolbarTips,
+        spellChecker: options.spellChecker,
+        nativeSpellcheck: options.nativeSpellcheck,
 
         autosave: options.autoSave,
 
@@ -176,3 +178,40 @@ async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
             notifyImageUploadSuccess(elementId, r);
     });
 }
+
+const loadCSS = function (name, url) {
+    if (document.getElementById(name))
+        return;
+
+    return new Promise(function (resolve, reject) {
+        const link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href = sourceUrl;
+
+        link.addEventListener('load', function () {
+            // The script is loaded completely
+            resolve(true);
+        });
+
+        document.head.appendChild(script);
+    });
+};
+
+const loadScript = function (name, url) {
+    if (document.getElementById(name))
+        return;
+
+    return new Promise(function (resolve, reject) {
+        const script = document.createElement('script');
+        script.src = url;
+        script.id = name;
+
+        script.addEventListener('load', function () {
+            // The script is loaded completely
+            resolve(true);
+        });
+
+        document.head.appendChild(script);
+    });
+};

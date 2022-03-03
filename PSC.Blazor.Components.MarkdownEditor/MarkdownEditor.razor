@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime JSRuntime
+﻿@implements IDisposable
+@inject IJSRuntime JSRuntime
 
 <CascadingValue Value="@this" IsFixed="true">
     <textarea @ref="@ElementRef" id="@ElementId">
