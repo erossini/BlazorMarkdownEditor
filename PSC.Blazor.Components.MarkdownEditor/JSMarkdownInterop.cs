@@ -18,7 +18,7 @@
         /// <param name="JSRuntime">The js runtime.</param>
         public JSMarkdownInterop(IJSRuntime JSRuntime)
         {
-            this.jsRuntime = JSRuntime;
+            jsRuntime = JSRuntime;
 
             moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>("import",
                 "./_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js").AsTask());
@@ -78,6 +78,7 @@
         public async ValueTask SetValue(string elementId, string value)
         {
             await jsRuntime.InvokeVoidAsync("setValue", elementId, value);
+            await jsRuntime.InvokeVoidAsync("setInitValue", elementId, value);
         }
 
         /// <summary>

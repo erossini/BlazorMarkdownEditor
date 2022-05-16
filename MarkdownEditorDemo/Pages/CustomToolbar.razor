@@ -1,15 +1,32 @@
-﻿@page "/"
+﻿@page "/customtoolbar"
+
+<h3>Custom Toolbar</h3>
 
 <div class="col-md-12">
     <MarkdownEditor @bind-Value="@markdownValue"
                     ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
-                    SpellChecker="false" @ref="Markdown1" />
+                    SpellChecker="false" @ref="Markdown1"
+                    CustomButtonClicked="@OnCustomButtonClicked">
+        <Toolbar>
+            <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bolt" Title="Bold" />
+            <MarkdownToolbarButton Separator Name="Custom button" Value="@("Hello from your custom Toolbar Button")" Icon="fa fa-star" Title="A Custom Button" />
+            <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" Icon="fa fab fa-github" Title="A Custom Link" />
+            <MarkdownToolbarButton Name="https://www.puresourcecode.com/" Icon="fa fab fa-link" Title="PureSourceCode website" />
+        </Toolbar>
+    </MarkdownEditor>
 
     <button @onclick="ChangeText">Change text</button>
     <hr />
 
+    <h3>Custom toolbar</h3>
+    @((MarkupString)buttonText)
+
+    <hr style="height: 2px;" />
+
     <h3>Result</h3>
     @((MarkupString)markdownHtml)
+
+    <hr style="height: 2px;" />
 
     <h3>Value</h3>
     @((MarkupString)markdownValue)
@@ -24,6 +41,7 @@
                            "[links](https://google.com) and all the other features. " +
                            "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
     string markdownHtml;
+    string buttonText;
 
     async Task ChangeText()
     {
@@ -45,6 +63,14 @@
     Task OnMarkdownValueHTMLChanged(string value)
     {
         markdownHtml = value;
+        return Task.CompletedTask;
+    }
+
+    Task OnCustomButtonClicked(MarkdownButtonEventArgs eventArgs)
+    {
+        Console.WriteLine("OnCustomButtonClicked -> " + eventArgs.Value);
+        buttonText += "OnCustomButtonClicked -> " + eventArgs.Value + "<br />";
+
         return Task.CompletedTask;
     }
 }
