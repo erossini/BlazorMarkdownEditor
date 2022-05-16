@@ -68,6 +68,63 @@ The result is a nice Markdown Editor like in the following screenshot. This is a
 
 ![markdown-editor-example](https://user-images.githubusercontent.com/9497415/148641050-653f6101-7099-4d76-9a59-45a44e32a275.gif)
 
+### Add a custom toolbar
+
+In your Markdown Editor add the following code
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                SpellChecker="false"
+                CustomButtonClicked="@OnCustomButtonClicked">
+    <Toolbar>
+        <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bolt" Title="Bold" />
+        <MarkdownToolbarButton Separator Name="Custom button" Value="@("Hello from your custom Toolbar Button")" Icon="fa fa-star" Title="A Custom Button" />
+        <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" Icon="fa fab fa-github" Title="A Custom Link" />
+    </Toolbar>
+</MarkdownEditor>
+
+@code {
+    // omitted code...
+
+    Task OnCustomButtonClicked(MarkdownButtonEventArgs eventArgs)
+    {
+        Console.WriteLine("OnCustomButtonClicked -> " + eventArgs.Value);
+        buttonText += "OnCustomButtonClicked -> " + eventArgs.Value + "<br />";
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+In the tag `MarkdownEditor`, you add the new tab `Toolbar` that contains one or more `MarkdownToolbarButton`. 
+
+Each `MarkdownToolbarButton` can have one of the default `Action` (see table below) or a custom value for example a link to a website. 
+If you want to display before a `MarkdownToolbarButton` a vertical line, add the property `Separator` in the `MarkdownToolbarButton`.
+
+### Change the content after the first init
+
+In same cases, you want to refresh the content of the Markdown Editor after the first init, for example because your application has to read the value from an API and it takes time.
+For that, you have to add a `ref` to the `MarkdownEditor` and then use it to call `SetValueAsync` property, as in the following code
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                SpellChecker="false" @ref="Markdown1" />
+
+@code {
+    MarkdownEditor Markdown1;
+
+    // omitted code...
+
+    async Task ChangeText()
+    {
+        markdownValue = "Test!";
+        await Markdown1.SetValueAsync(markdownValue);
+    }
+}
+```
+
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:
 - **MarkdownEditorDemo** is a Blazor Web Assembly project that contains 2 pages: `Index.razor` where I show how to use the component with the basic functions and `Upload.razor` that shows how to cope with the image upload. To test the upload, the project `MarkdownEditorDemo.Api` must run

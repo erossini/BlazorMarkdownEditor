@@ -38,7 +38,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         private ElementReference ElementRef { get; set; }
 
         #endregion Element references
-
         #region Local variable
 
         /// <summary>
@@ -68,7 +67,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// <inheritdoc/>
         protected bool ShouldAutoGenerateId => true;
         #endregion Local variable
-
         #region AutoSave
 
         /// <summary>
@@ -176,7 +174,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [Parameter]
         public string AutoSaveTimeFormatYear { get; set; } = "numeric";
         #endregion AutoSave
-
         #region Event Callback
 
         /// <summary>
@@ -449,7 +446,20 @@ namespace PSC.Blazor.Components.MarkdownEditor
         {
             if (!Initialized)
                 return null;
+
             return await JSModule.GetValue(ElementId);
+        }
+
+        /// <summary>
+        /// Notifies the custom button clicked.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [JSInvokable]
+        public Task NotifyCustomButtonClicked(string name, object value)
+        {
+            return CustomButtonClicked.InvokeAsync(new MarkdownButtonEventArgs(name, value));
         }
 
         /// <summary>
@@ -492,6 +502,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         {
             if (!Initialized)
                 return;
+
             await JSModule.SetValue(ElementId, value);
         }
 

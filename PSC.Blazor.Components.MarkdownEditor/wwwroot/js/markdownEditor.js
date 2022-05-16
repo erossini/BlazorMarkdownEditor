@@ -92,7 +92,6 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     });
 
     easyMDE.codemirror.on("change", function () {
-        console.log(easyMDE.value());
         dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", easyMDE.value());
     });
 
@@ -110,6 +109,16 @@ function destroy(element, elementId) {
 }
 
 function setValue(elementId, value) {
+    console.log("SetValue called");
+    const instance = _instances[elementId];
+
+    if (instance) {
+        console.log("SetValue changes value");
+        instance.editor.value(value);
+    }
+}
+
+function setInitValue(elementId, value) {
     const instance = _instances[elementId];
 
     if (instance) {
