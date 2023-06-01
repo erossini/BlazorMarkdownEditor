@@ -51,7 +51,18 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         showIcons: options.showIcons,
         renderingConfig: {
             singleLineBreaks: false,
-            codeSyntaxHighlighting: true
+            codeSyntaxHighlighting: true,
+            markedOptions: {
+                langPrefix: "",
+                highlight: function (code, lang) {
+                    if (lang === "mermaid") {
+                        return mermaid.mermaidAPI.render('mermaid0', code, undefined);
+                    } else {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, { language }).value;
+                    }
+                }
+            }
         },
         initialValue: options.value,
         sideBySideFullscreen: false,
