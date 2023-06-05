@@ -2,3 +2,7 @@
 {
     max-width: 100%;
 }
+
+button.table {
+    width: 30px !important;
+}

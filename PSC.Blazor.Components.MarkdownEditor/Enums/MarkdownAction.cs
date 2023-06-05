@@ -10,6 +10,10 @@
         /// </summary>
         Bold,
         /// <summary>
+        /// The custom action
+        /// </summary>
+        Custom,
+        /// <summary>
         /// The italic
         /// </summary>
         Italic,

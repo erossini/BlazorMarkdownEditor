@@ -1,5 +1,5 @@
 # Blazor Markdown Editor
-This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) to create the editor and [Markdig](https://github.com/xoofx/markdig) for rendering the Markdown text in HTML. 
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) version _2.18.0_ to create the editor. 
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
 
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
@@ -24,7 +24,7 @@ Then, in your `index.html` or `host.html` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.16.1. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.18.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 ### Add MarkdownEditor in a page
 
@@ -44,12 +44,6 @@ In a `Razor` page, we can add the component with these lines
 @code {
     string markdownValue = "#Markdown Editor\nThis is a test";
     string markdownHtml;
-
-    protected override void OnInitialized()
-    {
-        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
-        base.OnInitialized();
-    }
 
     Task OnMarkdownValueChanged(string value)
     {
@@ -79,8 +73,12 @@ In your Markdown Editor add the following code
                 CustomButtonClicked="@OnCustomButtonClicked">
     <Toolbar>
         <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bolt" Title="Bold" />
-        <MarkdownToolbarButton Separator Name="Custom button" Value="@("Hello from your custom Toolbar Button")" Icon="fa fa-star" Title="A Custom Button" />
-        <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" Icon="fa fab fa-github" Title="A Custom Link" />
+        <MarkdownToolbarButton Separator Name="Custom button" 
+                               Value="@("Hello from your custom Toolbar Button")" 
+                               Icon="fa fa-star" 
+                               Title="A Custom Button" />
+        <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" 
+                               Icon="fa fab fa-github" Title="A Custom Link" />
     </Toolbar>
 </MarkdownEditor>
 

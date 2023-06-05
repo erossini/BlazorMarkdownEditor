@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace PSC.Blazor.Components.MarkdownEditor
 {
     /// <summary>
@@ -59,6 +61,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// The toolbar buttons
         /// </summary>
         private List<MarkdownToolbarButton> toolbarButtons;
+
         /// <summary>
         /// Indicates if markdown editor is properly initialized.
         /// </summary>
@@ -194,7 +197,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [Parameter]
         public EventCallback<string> ValueHTMLChanged { get; set; }
         #endregion Event Callback
-
         #region Parameters
 
         /// <summary>
@@ -567,18 +569,18 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// <summary>
         /// Updates the internal markdown value. This method should only be called internally!
         /// </summary>
-        /// <param name = "value">New value.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <param name="value">New value.</param>
+        /// <param name="valueHTML">The value HTML.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// </returns>
         [JSInvokable]
-        public async Task UpdateInternalValue(string value)
+        public async Task UpdateInternalValue(string value, string valueHTML)
         {
-            Value = value;
-
-            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            ValueHTML = Markdown.ToHtml(value ?? string.Empty, pipeline);
-
-            await ValueHTMLChanged.InvokeAsync(ValueHTML);
             await ValueChanged.InvokeAsync(value);
+
+            var match = valueHTML.ExtractTagContent("body");
+            await ValueHTMLChanged.InvokeAsync(match);
         }
 
         /// <summary>
@@ -596,7 +598,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
             await ImageUploadStarted.Invoke(new(fileInfo));
 
-            HttpResponseMessage responseMessage;
             using (HttpClient httpClient = new HttpClient())
             {
                 if (!string.IsNullOrWhiteSpace(ImageUploadAuthenticationSchema) && !string.IsNullOrWhiteSpace(ImageUploadAuthenticationToken))
@@ -632,7 +633,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     else
                         fileInfo.ErrorMessage = $"Error uploading the file {fileInfo.Name}";
                 }
-                catch (Exception ex)
+                catch
                 {
                     fileInfo.ErrorMessage = $"Bad request uploading the file {fileInfo.Name}";
                 }

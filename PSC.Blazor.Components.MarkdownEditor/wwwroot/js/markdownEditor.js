@@ -45,6 +45,29 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         onError: (e) => { }
     };
 
+    var mermaidInstalled = false;
+    var hljsInstalled = false;
+
+    if (typeof hljs !== 'undefined')
+        hljsInstalled = true;
+
+    if (typeof mermaid !== 'undefined') {
+        mermaidInstalled = true;
+        if (options.toolbar == undefined) {
+            options.toolbar = [
+                "bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", 
+                "link", "image", "table", "|",
+                {
+                    name: "addMermaid",
+                    action: drawRedText,
+                    className: "fas fa-pie-chart",
+                    title: "Add Mermaid",
+                },
+                "|", "preview", "|", "guide"
+            ];
+        }
+    }
+
     const easyMDE = new EasyMDE({
         element: document.getElementById(elementId),
         hideIcons: options.hideIcons,
@@ -55,12 +78,15 @@ function initialize(dotNetObjectRef, element, elementId, options) {
             markedOptions: {
                 langPrefix: "",
                 highlight: function (code, lang) {
-                    if (lang === "mermaid") {
+                    if (lang === "mermaid" && mermaidInstalled) {
                         return mermaid.mermaidAPI.render('mermaid0', code, undefined);
-                    } else {
+                    }
+                    else if (hljsInstalled) {
                         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                         return hljs.highlight(code, { language }).value;
                     }
+                    else
+                        return code;
                 }
             }
         },
@@ -103,8 +129,19 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     });
 
     easyMDE.codemirror.on("change", function () {
-        dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", easyMDE.value());
+        var text = easyMDE.value();
+        dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
     });
+
+    function drawRedText(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```mermaid' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
 
     instances[elementId] = {
         dotNetObjectRef: dotNetObjectRef,
@@ -112,6 +149,10 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         editor: easyMDE,
         imageUploadNotifier: imageUploadNotifier
     };
+
+    // update the first time
+    var text = easyMDE.value();
+    dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
 }
 
 function destroy(element, elementId) {

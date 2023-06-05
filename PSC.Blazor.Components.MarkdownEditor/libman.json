@@ -3,13 +3,17 @@
   "defaultProvider": "jsdelivr",
   "libraries": [
     {
-      "library": "easymde@2.15.0",
-      "destination": "wwwroot/easymde/"
+      "library": "easymde@2.18.0",
+      "destination": "wwwroot/lib/easymde/"
     },
     {
       "provider": "cdnjs",
       "library": "simplemde@1.11.2",
       "destination": "wwwroot/lib/simplemde/"
+    },
+    {
+      "library": "highlight.js@11.8.0",
+      "destination": "wwwroot/lib/highlight.js/"
     }
   ]
 }

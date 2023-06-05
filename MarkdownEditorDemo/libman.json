@@ -9,6 +9,10 @@
     {
       "library": "jquery@3.6.0",
       "destination": "wwwroot/lib/query/"
+    },
+    {
+      "library": "highlight.js@11.8.0",
+      "destination": "wwwroot/lib/highlight.js/"
     }
   ]
 }

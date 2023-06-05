@@ -23,16 +23,10 @@
     string markdownValue = "# Markdown Editor for Blazor\nThis component is using [EasyMDE](https://easy-markdown-editor.tk/) " +
                                            "to display a nice editor and all functionalities are mapped. See the documentation for more details.\n\n" +
                                            "Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, " +
-                                           "[links](https://google.com) and all the other features. " +
-                                           "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
+                                           "[links](https://www.puresourcecode.com) and all the other features. " +
+                                           "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.\n\n" + 
+                                           "Please check [PureSourceCode.com](https://www.puresourcecode.com) for more updates.";
     string markdownHtml;
-
-    protected override void OnInitialized()
-    {
-        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
-
-        base.OnInitialized();
-    }
 
     Task OnMarkdownValueChanged(string value)
     {
