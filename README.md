@@ -123,6 +123,46 @@ For that, you have to add a `ref` to the `MarkdownEditor` and then use it to cal
 }
 ```
 
+## Add Mermaid render
+
+In order to add more functionaties to the component, it includes the version of [mermaid.js](https://mermaid.js.org/) 10.2.1 that allows to add impressive diagrams and chart in the Markdown component like
+- Flowchart
+- Sequence Diagram
+- Class Diagram
+- State Diagram
+- Entity Relationship Diagram
+- User Journey
+- Gantt
+- Pie Chart
+- Quadrant Chart
+- Requirement Diagram
+- Gitgraph (Git) Diagram
+- C4C Diagram (Context) Diagram
+- Mindmaps
+- Timeline
+
+To add this functionality to the Markdown Editor, it is enough to add in the `index.html` this script
+
+```javascript
+<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js"></script>
+```
+
+The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to add the tag for mermaid that is
+
+> ```mermaid
+> ```
+
+## Add Highlight.js
+
+This script is not included in the component but the component cat detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
+
+To enable this function, add the script in your project and then in the `index.html` add the following lines
+
+```
+<link rel="stylesheet" href="/path/to/styles/default.min.css">
+<script src="/path/to/highlight.min.js"></script>
+```
+
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:
 - **MarkdownEditorDemo** is a Blazor Web Assembly project that contains 2 pages: `Index.razor` where I show how to use the component with the basic functions and `Upload.razor` that shows how to cope with the image upload. To test the upload, the project `MarkdownEditorDemo.Api` must run
