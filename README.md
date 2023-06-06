@@ -149,8 +149,10 @@ To add this functionality to the Markdown Editor, it is enough to add in the `in
 
 The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to add the tag for mermaid that is
 
+```
 \`\`\`mermaid
 \`\`\`
+```
 
 ## Add Highlight.js
 
