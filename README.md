@@ -58,6 +58,9 @@ In a `Razor` page, we can add the component with these lines
 }
 ```
 
+The main different between `value` and `ValueHTMLChanged` is that `Value` return the text written in the editor as a string whereas `ValueHTMLChanged` returns the rendered HTML code for the text. 
+The `ValueHTMLChanged` includes the code for displaying mermaid graphs in a `SVG` tag.
+
 The result is a nice Markdown Editor like in the following screenshot. This is a screenshot from the demo in this repository.
 
 ![markdown-editor-example](https://user-images.githubusercontent.com/9497415/148641050-653f6101-7099-4d76-9a59-45a44e32a275.gif)
@@ -147,12 +150,52 @@ To add this functionality to the Markdown Editor, it is enough to add in the `in
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js"></script>
 ```
 
-The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to add the tag for mermaid that is
+The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to insert the tag for mermaid. That tag is
 
 ```
-\`\`\`mermaid
-\`\`\`
+    ```mermaid
+    ```
 ```
+
+### An example of the mermaid graphs
+A **Sequence diagram** is an interaction diagram that shows how processes operate with one another and in what order.
+
+```
+sequenceDiagram
+    Alice->>John: Hello John, how are you?
+    John-->>Alice: Great!
+    Alice-)John: See you later!
+```
+
+![Sequence diagram](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/10073d80-b23c-42e6-b422-3f23161baf83)
+
+A **Gantt chart** is useful for tracking the amount of time it would take before a project is finished, but it can also be used to graphically represent "non-working days", with a few tweaks.
+
+```
+gantt
+    title A Gantt Diagram
+    dateFormat  YYYY-MM-DD
+    section Section
+    A task           :a1, 2014-01-01, 30d
+    Another task     :after a1  , 20d
+    section Another
+    Task in sec      :2014-01-12  , 12d
+    another task      : 24d
+```
+
+![Gantt chart](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/b5e90134-c385-4f6f-9d86-c28bdd743ca9)
+
+An **entity–relationship model** (or ER model) describes interrelated things of interest in a specific domain of knowledge. A basic ER model is composed of entity types (which classify the things of interest) and specifies relationships that can exist between entities (instances of those entity types).
+
+```
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
+```
+
+![entity–relationship model](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/1834c522-57db-41a7-a8ae-65f4438e1bff)
+
 
 ## Add Highlight.js
 
