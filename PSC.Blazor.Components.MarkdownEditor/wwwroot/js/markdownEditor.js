@@ -55,15 +55,17 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         mermaidInstalled = true;
         if (options.toolbar == undefined) {
             options.toolbar = [
-                "bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", 
-                "link", "image", "table", "|",
+                "bold", "italic", "heading", "|",
+                "undo", "redo", "|", "code",
                 {
                     name: "addMermaid",
                     action: drawRedText,
                     className: "fas fa-pie-chart",
                     title: "Add Mermaid",
                 },
-                "|", "preview", "|", "guide"
+                "|", "quote", "unordered-list", "ordered-list", "|", 
+                "link", "image", "table", "|", "fullscreen",
+                "preview", "|", "guide"
             ];
         }
     }
@@ -81,7 +83,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                     if (lang === "mermaid" && mermaidInstalled) {
                         return mermaid.mermaidAPI.render('mermaid0', code, undefined);
                     }
-                    else if (hljsInstalled) {
+                    else if (lang === "code" && hljsInstalled) {
                         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                         return hljs.highlight(code, { language }).value;
                     }
@@ -240,7 +242,7 @@ async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
     });
 }
 
-const loadCSS = function (name, url) {
+const meLoadCSS = function (name, url) {
     if (document.getElementById(name))
         return;
 
@@ -259,7 +261,7 @@ const loadCSS = function (name, url) {
     });
 };
 
-const loadScript = function (name, url) {
+const meLoadScript = function (name, url) {
     if (document.getElementById(name))
         return;
 

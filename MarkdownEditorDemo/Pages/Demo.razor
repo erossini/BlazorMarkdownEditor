@@ -1,0 +1,52 @@
+﻿@page "/demo"
+
+<div class="col-md-12">
+    <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    SpellChecker="false" @ref="Markdown1" />
+
+    <button @onclick="ChangeText">Change text</button>
+    <hr />
+
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+
+    <h3>Value</h3>
+    @((MarkupString)markdownValue)
+</div>
+
+@code {
+    MarkdownEditor Markdown1;
+
+    string markdownValue = "# Markdown Editor for Blazor\nThis component is using [EasyMDE](https://easy-markdown-editor.tk/) " +
+                           "to display a nice editor and all functionalities are mapped. See the documentation for more details.\n\n" +
+                           "Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, " +
+                           "[links](https://www.puresourcecode.com) and all the other features. " +
+                           "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.\n\n" +
+                           "Please check [PureSourceCode.com](https://www.puresourcecode.com) for more updates.\n\n" + 
+                           "## Add code\nMarkdown Editor supports [highlight.js](https://highlightjs.org/) to colorize your code.\n\n" +
+                           "```code\npublic async Task<string> GetValueAsync() {\n    return false;\n}\n```\n\n" +
+                           "## Add a mermaid graph\nFrom now on, the Markdown Editor can render mermaid graph. " + 
+                           "See the [documentation](https://mermaid.js.org/intro/).\n\n" +
+                           "```mermaid\nstateDiagram\n    [*] --> Still\n    Still --> [*]\n\n    Still --> Moving\n    " + 
+                           "Moving --> Still\n    Moving --> Crash\n    Crash --> [*]\n```\n";
+    string markdownHtml;
+
+    async Task ChangeText()
+    {
+        markdownValue = "Test!";
+        await Markdown1.SetValueAsync(markdownValue);
+    }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        markdownValue = value;
+        return Task.CompletedTask;
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+}

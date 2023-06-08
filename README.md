@@ -199,7 +199,7 @@ erDiagram
 
 ## Add Highlight.js
 
-This script is not included in the component but the component cat detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
+This script is not included in the component but the component can detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
 
 To enable this function, add the script in your project and then in the `index.html` add the following lines
 
@@ -207,6 +207,10 @@ To enable this function, add the script in your project and then in the `index.h
 <link rel="stylesheet" href="/path/to/styles/default.min.css">
 <script src="/path/to/highlight.min.js"></script>
 ```
+
+### Known issue using mermaid and Highlight.js
+
+If both libraries are loaded in the _index.html_, the mermaid render will not work. 
 
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:

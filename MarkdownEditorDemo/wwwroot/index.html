@@ -13,7 +13,12 @@
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link href="lib/font-awesome/css/all.css" rel="stylesheet" />
 
+    <!-- include highlight.js CSS -->
+    <!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">-->
+
+    <!-- include the CSS for the EasyMDE -->
     <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -29,9 +34,25 @@
 
     <script src="lib/query/jquery.js"></script>
 
+    <!-- include highlight.js script -->
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>-->
+    <!-- add PSC.Blazor.Components.CodeSnippet (https://www.puresourcecode.com/dotnet/blazor/add-code-snippet-in-razor-pages/) -->
+    <script src="/_content/PSC.Blazor.Components.CodeSnippet/codesnippet.js"></script>
+
+    <!-- add the scripts for the MarkdownEditor -->
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js"></script>
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
     <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51944269-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-51944269-3');
+    </script>
 </body>
 
 </html>
