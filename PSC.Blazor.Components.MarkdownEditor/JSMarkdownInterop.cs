@@ -31,7 +31,7 @@
         /// <returns></returns>
         public async ValueTask AddJS(string targetUrl)
         {
-            await jsRuntime.InvokeVoidAsync("loadJs", targetUrl);
+            await jsRuntime.InvokeVoidAsync("meLoadJs", targetUrl);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@
         /// <returns></returns>
         public async ValueTask AddCSS(string targetUrl)
         {
-            await jsRuntime.InvokeVoidAsync("loadCSS", targetUrl);
+            await jsRuntime.InvokeVoidAsync("meLoadCSS", targetUrl);
         }
 
         /// <summary>

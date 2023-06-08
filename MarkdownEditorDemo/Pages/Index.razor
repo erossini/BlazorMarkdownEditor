@@ -1,50 +1,195 @@
 ﻿@page "/"
 
-<div class="col-md-12">
-    <MarkdownEditor @bind-Value="@markdownValue"
-                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
-                    SpellChecker="false" @ref="Markdown1" />
+<h3>Markdown Editor for Blazor</h3>
 
-    <button @onclick="ChangeText">Change text</button>
-    <hr />
+<p>
+    This is a Markdown Editor component for <a href="https://www.puresourcecode.com/tag/blazor-webassembly/" rel="nofollow">Blazor WebAssembly</a> and <a href="https://www.puresourcecode.com/tag/blazor-server/" rel="nofollow">Blazor Server</a> with .NET6.
+    The component is based on <a href="https://easy-markdown-editor.tk/" rel="nofollow">EasyMDE</a> to create the editor and <a href="https://github.com/xoofx/markdig">Markdig</a> for rendering the Markdown text in HTML.
+    For more documentation and help this component, visit the post I created <a href="https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/" rel="nofollow">here</a>.
+</p>
 
-    <h3>Result</h3>
-    @((MarkupString)markdownHtml)
+<p>
+    <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/">
+        <img src="https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg" alt="markdown-editor-blazor-logo" style="max-width: 100%;">
+    </a>
+</p>
 
-    <h3>Value</h3>
-    @((MarkupString)markdownValue)
-</div>
+<h2>Usage</h2>
 
-@code {
-    MarkdownEditor Markdown1;
+<p>
+    Add the Editor to your <i>_Imports.razor</i>
+</p>
 
-    string markdownValue = "# Markdown Editor for Blazor\nThis component is using [EasyMDE](https://easy-markdown-editor.tk/) " +
-                           "to display a nice editor and all functionalities are mapped. See the documentation for more details.\n\n" +
-                           "Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, " +
-                           "[links](https://google.com) and all the other features. " +
-                           "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
-    string markdownHtml;
+<CodeSnippet Language="Language.csharp" Style="Style.VisualStudio">
+using PSC.Blazor.Components.MarkdownEditor
+using PSC.Blazor.Components.MarkdownEditor.EventsArgs
+</CodeSnippet>
 
-    async Task ChangeText()
-    {
-        markdownValue = "Test!";
-        await Markdown1.SetValueAsync(markdownValue);
-    }
+<p>
+    Then, in your <i></i>index.html or <i>host.html</i> add those lines:
+</p>
 
-    protected override void OnInitialized()
-    {
-        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
-        base.OnInitialized();
-    }
+<CodeSnippet Language="Language.csharp">
+&lt;link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
 
-    Task OnMarkdownValueChanged(string value)
-    {
-        return Task.CompletedTask;
-    }
+&lt;script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js">&lt;/script>
+&lt;script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js">&lt;/script>
+</CodeSnippet>
 
-    Task OnMarkdownValueHTMLChanged(string value)
-    {
-        markdownHtml = value;
-        return Task.CompletedTask;
-    }
-}
+<p>
+    Remember that <code>jQuery</code> is also required. The component cointains the <a href="https://easy-markdown-editor.tk/" rel="nofollow">EasyMDE</a> script version 2.16.1.
+    Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+</p>
+
+<h3>Add Mermaid render</h3>
+<p>
+    In order to add more functionaties to the component, it includes the version of mermaid.js 10.2.1 that allows to add impressive diagrams and chart in the Markdown component like
+</p>
+
+<ul dir="auto">
+    <li>Flowchart</li>
+    <li>Sequence Diagram</li>
+    <li>Class Diagram</li>
+    <li>State Diagram</li>
+    <li>Entity Relationship Diagram</li>
+    <li>User Journey</li>
+    <li>Gantt</li>
+    <li>Pie Chart</li>
+    <li>Quadrant Chart</li>
+    <li>Requirement Diagram</li>
+    <li>Gitgraph (Git) Diagram</li>
+    <li>C4C Diagram (Context) Diagram</li>
+    <li>Mindmaps</li>
+    <li>Timeline</li>
+</ul>
+
+<p>
+    To add this functionality to the Markdown Editor, it is enough to add in the <i>index.html</i> this script
+</p>
+
+<CodeSnippet Language="Language.javascript">
+&lt;script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js">&lt;/script>
+</CodeSnippet>
+
+<h3>Add Highlight.js</h3>
+
+<p>
+    This script is not included in the Markdown Editor component but the component can detect if <a href="https://highlightjs.org/" target="_blank">Highlight.js</a> is loaded.
+    In this case, the Markdown Editor renders also the code in one of the supported languages.
+</p>
+
+<p>
+    To enable this function, add the script in your project and then in the index.html add the following lines
+</p>
+
+<CodeSnippet Language="Language.javascript">
+&lt;link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+&lt;script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js">&lt;/script>
+</CodeSnippet>
+
+<h4>Known issue using mermaid and Highlight.js</h4>
+
+<p>
+    If both libraries are loaded in the _index.html_, the mermaid render will not work.
+</p>
+
+<h2>Shortcuts</h2>
+
+<table id="pragma-line-320">
+    <thead>
+        <tr id="pragma-line-320">
+            <th style="text-align: left;" id="pragma-line-320">Shortcut (Windows / Linux)</th>
+            <th style="text-align: left;" id="pragma-line-320">Shortcut (macOS)</th>
+            <th style="text-align: left;" id="pragma-line-320">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="pragma-line-322">
+            <td style="text-align: left;" id="pragma-line-322"><em>Ctrl-'</em></td>
+            <td style="text-align: left;" id="pragma-line-322"><em>Cmd-'</em></td>
+            <td style="text-align: left;" id="pragma-line-322">"toggleBlockquote"</td>
+        </tr>
+        <tr id="pragma-line-323">
+            <td style="text-align: left;" id="pragma-line-323"><em>Ctrl-B</em></td>
+            <td style="text-align: left;" id="pragma-line-323"><em>Cmd-B</em></td>
+            <td style="text-align: left;" id="pragma-line-323">"toggleBold"</td>
+        </tr>
+        <tr id="pragma-line-324">
+            <td style="text-align: left;" id="pragma-line-324"><em>Ctrl-E</em></td>
+            <td style="text-align: left;" id="pragma-line-324"><em>Cmd-E</em></td>
+            <td style="text-align: left;" id="pragma-line-324">"cleanBlock"</td>
+        </tr>
+        <tr id="pragma-line-325">
+            <td style="text-align: left;" id="pragma-line-325"><em>Ctrl-H</em></td>
+            <td style="text-align: left;" id="pragma-line-325"><em>Cmd-H</em></td>
+            <td style="text-align: left;" id="pragma-line-325">"toggleHeadingSmaller"</td>
+        </tr>
+        <tr id="pragma-line-326">
+            <td style="text-align: left;" id="pragma-line-326"><em>Ctrl-I</em></td>
+            <td style="text-align: left;" id="pragma-line-326"><em>Cmd-I</em></td>
+            <td style="text-align: left;" id="pragma-line-326">"toggleItalic"</td>
+        </tr>
+        <tr id="pragma-line-327">
+            <td style="text-align: left;" id="pragma-line-327"><em>Ctrl-K</em></td>
+            <td style="text-align: left;" id="pragma-line-327"><em>Cmd-K</em></td>
+            <td style="text-align: left;" id="pragma-line-327">"drawLink"</td>
+        </tr>
+        <tr id="pragma-line-328">
+            <td style="text-align: left;" id="pragma-line-328"><em>Ctrl-L</em></td>
+            <td style="text-align: left;" id="pragma-line-328"><em>Cmd-L</em></td>
+            <td style="text-align: left;" id="pragma-line-328">"toggleUnorderedList"</td>
+        </tr>
+        <tr id="pragma-line-329">
+            <td style="text-align: left;" id="pragma-line-329"><em>Ctrl-P</em></td>
+            <td style="text-align: left;" id="pragma-line-329"><em>Cmd-P</em></td>
+            <td style="text-align: left;" id="pragma-line-329">"togglePreview"</td>
+        </tr>
+        <tr id="pragma-line-330">
+            <td style="text-align: left;" id="pragma-line-330"><em>Ctrl-Alt-C</em></td>
+            <td style="text-align: left;" id="pragma-line-330"><em>Cmd-Alt-C</em></td>
+            <td style="text-align: left;" id="pragma-line-330">"toggleCodeBlock"</td>
+        </tr>
+        <tr id="pragma-line-331">
+            <td style="text-align: left;" id="pragma-line-331"><em>Ctrl-Alt-I</em></td>
+            <td style="text-align: left;" id="pragma-line-331"><em>Cmd-Alt-I</em></td>
+            <td style="text-align: left;" id="pragma-line-331">"drawImage"</td>
+        </tr>
+        <tr id="pragma-line-332">
+            <td style="text-align: left;" id="pragma-line-332"><em>Ctrl-Alt-L</em></td>
+            <td style="text-align: left;" id="pragma-line-332"><em>Cmd-Alt-L</em></td>
+            <td style="text-align: left;" id="pragma-line-332">"toggleOrderedList"</td>
+        </tr>
+        <tr id="pragma-line-333">
+            <td style="text-align: left;" id="pragma-line-333"><em>Shift-Ctrl-H</em></td>
+            <td style="text-align: left;" id="pragma-line-333"><em>Shift-Cmd-H</em></td>
+            <td style="text-align: left;" id="pragma-line-333">"toggleHeadingBigger"</td>
+        </tr>
+        <tr id="pragma-line-334">
+            <td style="text-align: left;" id="pragma-line-334"><em>F9</em></td>
+            <td style="text-align: left;" id="pragma-line-334"><em>F9</em></td>
+            <td style="text-align: left;" id="pragma-line-334">"toggleSideBySide"</td>
+        </tr>
+        <tr id="pragma-line-335">
+            <td style="text-align: left;" id="pragma-line-335"><em>F11</em></td>
+            <td style="text-align: left;" id="pragma-line-335"><em>F11</em></td>
+            <td style="text-align: left;" id="pragma-line-335">"toggleFullScreen"</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Support</h2>
+
+<p>
+    For more information about this component, here some links:
+</p>
+
+<ul>
+    <li>
+        <a href="https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/" target="_blank">Markdown Editor component</a> 
+        on <a href="https://www.puresourcecode.com" target="_blank">PureSourceCode.com</a>
+    </li>
+    <li><a href="https://www.puresourcecode.com/forum/forum/markdown-editor-for-blazor/" target="_blank">Markdown Editor Forum</a></li>
+    <li>Source Code on <a href="https://github.com/erossini/BlazorMarkdownEditor" target="_blank">GitHub</a></li>
+    <li><a href="https://markdown.puresourcecode.com/" target="_blank">Demo</a></li>
+    <li>If you like the component, please <a href="https://github.com/sponsors/erossini" target="_blank">donate here</a> to support me to continue to maintain all my components</li>
+</ul>

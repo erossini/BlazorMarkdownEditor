@@ -1,5 +1,5 @@
 # Blazor Markdown Editor
-This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) to create the editor and [Markdig](https://github.com/xoofx/markdig) for rendering the Markdown text in HTML. 
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) version _2.18.0_ to create the editor. 
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
 
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
@@ -24,7 +24,7 @@ Then, in your `index.html` or `host.html` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.16.1. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.18.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 ### Add MarkdownEditor in a page
 
@@ -45,12 +45,6 @@ In a `Razor` page, we can add the component with these lines
     string markdownValue = "#Markdown Editor\nThis is a test";
     string markdownHtml;
 
-    protected override void OnInitialized()
-    {
-        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
-        base.OnInitialized();
-    }
-
     Task OnMarkdownValueChanged(string value)
     {
         return Task.CompletedTask;
@@ -63,6 +57,9 @@ In a `Razor` page, we can add the component with these lines
     }
 }
 ```
+
+The main different between `value` and `ValueHTMLChanged` is that `Value` return the text written in the editor as a string whereas `ValueHTMLChanged` returns the rendered HTML code for the text. 
+The `ValueHTMLChanged` includes the code for displaying mermaid graphs in a `SVG` tag.
 
 The result is a nice Markdown Editor like in the following screenshot. This is a screenshot from the demo in this repository.
 
@@ -79,8 +76,12 @@ In your Markdown Editor add the following code
                 CustomButtonClicked="@OnCustomButtonClicked">
     <Toolbar>
         <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bolt" Title="Bold" />
-        <MarkdownToolbarButton Separator Name="Custom button" Value="@("Hello from your custom Toolbar Button")" Icon="fa fa-star" Title="A Custom Button" />
-        <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" Icon="fa fab fa-github" Title="A Custom Link" />
+        <MarkdownToolbarButton Separator Name="Custom button" 
+                               Value="@("Hello from your custom Toolbar Button")" 
+                               Icon="fa fa-star" 
+                               Title="A Custom Button" />
+        <MarkdownToolbarButton Separator Name="https://github.com/erossini/BlazorMarkdownEditor" 
+                               Icon="fa fab fa-github" Title="A Custom Link" />
     </Toolbar>
 </MarkdownEditor>
 
@@ -124,6 +125,92 @@ For that, you have to add a `ref` to the `MarkdownEditor` and then use it to cal
     }
 }
 ```
+
+## Add Mermaid render
+
+In order to add more functionaties to the component, it includes the version of [mermaid.js](https://mermaid.js.org/) 10.2.1 that allows to add impressive diagrams and chart in the Markdown component like
+- Flowchart
+- Sequence Diagram
+- Class Diagram
+- State Diagram
+- Entity Relationship Diagram
+- User Journey
+- Gantt
+- Pie Chart
+- Quadrant Chart
+- Requirement Diagram
+- Gitgraph (Git) Diagram
+- C4C Diagram (Context) Diagram
+- Mindmaps
+- Timeline
+
+To add this functionality to the Markdown Editor, it is enough to add in the `index.html` this script
+
+```javascript
+<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js"></script>
+```
+
+The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to insert the tag for mermaid. That tag is
+
+```
+    ```mermaid
+    ```
+```
+
+### An example of the mermaid graphs
+A **Sequence diagram** is an interaction diagram that shows how processes operate with one another and in what order.
+
+```
+sequenceDiagram
+    Alice->>John: Hello John, how are you?
+    John-->>Alice: Great!
+    Alice-)John: See you later!
+```
+
+![Sequence diagram](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/10073d80-b23c-42e6-b422-3f23161baf83)
+
+A **Gantt chart** is useful for tracking the amount of time it would take before a project is finished, but it can also be used to graphically represent "non-working days", with a few tweaks.
+
+```
+gantt
+    title A Gantt Diagram
+    dateFormat  YYYY-MM-DD
+    section Section
+    A task           :a1, 2014-01-01, 30d
+    Another task     :after a1  , 20d
+    section Another
+    Task in sec      :2014-01-12  , 12d
+    another task      : 24d
+```
+
+![Gantt chart](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/b5e90134-c385-4f6f-9d86-c28bdd743ca9)
+
+An **entity–relationship model** (or ER model) describes interrelated things of interest in a specific domain of knowledge. A basic ER model is composed of entity types (which classify the things of interest) and specifies relationships that can exist between entities (instances of those entity types).
+
+```
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
+```
+
+![entity–relationship model](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/1834c522-57db-41a7-a8ae-65f4438e1bff)
+
+
+## Add Highlight.js
+
+This script is not included in the component but the component can detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
+
+To enable this function, add the script in your project and then in the `index.html` add the following lines
+
+```
+<link rel="stylesheet" href="/path/to/styles/default.min.css">
+<script src="/path/to/highlight.min.js"></script>
+```
+
+### Known issue using mermaid and Highlight.js
+
+If both libraries are loaded in the _index.html_, the mermaid render will not work. 
 
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:

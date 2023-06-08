@@ -49,12 +49,6 @@
         await Markdown1.SetValueAsync(markdownValue);
     }
 
-    protected override void OnInitialized()
-    {
-        markdownHtml = Markdig.Markdown.ToHtml(markdownValue ?? string.Empty);
-        base.OnInitialized();
-    }
-
     Task OnMarkdownValueChanged(string value)
     {
         return Task.CompletedTask;

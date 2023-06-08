@@ -45,13 +45,52 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         onError: (e) => { }
     };
 
+    var mermaidInstalled = false;
+    var hljsInstalled = false;
+
+    if (typeof hljs !== 'undefined')
+        hljsInstalled = true;
+
+    if (typeof mermaid !== 'undefined') {
+        mermaidInstalled = true;
+        if (options.toolbar == undefined) {
+            options.toolbar = [
+                "bold", "italic", "heading", "|",
+                "undo", "redo", "|", "code",
+                {
+                    name: "addMermaid",
+                    action: drawRedText,
+                    className: "fas fa-pie-chart",
+                    title: "Add Mermaid",
+                },
+                "|", "quote", "unordered-list", "ordered-list", "|", 
+                "link", "image", "table", "|", "fullscreen",
+                "preview", "|", "guide"
+            ];
+        }
+    }
+
     const easyMDE = new EasyMDE({
         element: document.getElementById(elementId),
         hideIcons: options.hideIcons,
         showIcons: options.showIcons,
         renderingConfig: {
             singleLineBreaks: false,
-            codeSyntaxHighlighting: true
+            codeSyntaxHighlighting: true,
+            markedOptions: {
+                langPrefix: "",
+                highlight: function (code, lang) {
+                    if (lang === "mermaid" && mermaidInstalled) {
+                        return mermaid.mermaidAPI.render('mermaid0', code, undefined);
+                    }
+                    else if (lang === "code" && hljsInstalled) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, { language }).value;
+                    }
+                    else
+                        return code;
+                }
+            }
         },
         initialValue: options.value,
         sideBySideFullscreen: false,
@@ -92,8 +131,19 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     });
 
     easyMDE.codemirror.on("change", function () {
-        dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", easyMDE.value());
+        var text = easyMDE.value();
+        dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
     });
+
+    function drawRedText(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```mermaid' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
 
     instances[elementId] = {
         dotNetObjectRef: dotNetObjectRef,
@@ -101,6 +151,10 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         editor: easyMDE,
         imageUploadNotifier: imageUploadNotifier
     };
+
+    // update the first time
+    var text = easyMDE.value();
+    dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
 }
 
 function destroy(element, elementId) {
@@ -188,7 +242,7 @@ async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
     });
 }
 
-const loadCSS = function (name, url) {
+const meLoadCSS = function (name, url) {
     if (document.getElementById(name))
         return;
 
@@ -207,7 +261,7 @@ const loadCSS = function (name, url) {
     });
 };
 
-const loadScript = function (name, url) {
+const meLoadScript = function (name, url) {
     if (document.getElementById(name))
         return;
 
