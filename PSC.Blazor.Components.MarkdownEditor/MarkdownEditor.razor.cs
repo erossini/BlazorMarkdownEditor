@@ -215,7 +215,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// A callback function used to define how to display an error message. Defaults to (errorMessage) => alert(errorMessage).
         /// </summary>
         [Parameter]
-        public Func<string, Task> ErrorCallback { get; set; }
+        public Func<string, Task>? ErrorCallback { get; set; }
 
         /// <summary>
         /// Errors displayed to the user, using the errorCallback option, where #image_name#, #image_size#
@@ -271,13 +271,13 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Occurs every time the selected image has changed.
         /// </summary>
         [Parameter]
-        public Func<FileChangedEventArgs, Task> ImageUploadChanged { get; set; }
+        public Func<FileChangedEventArgs, Task>? ImageUploadChanged { get; set; }
 
         /// <summary>
         /// Occurs when an individual image upload has ended.
         /// </summary>
         [Parameter]
-        public Func<FileEndedEventArgs, Task> ImageUploadEnded { get; set; }
+        public Func<FileEndedEventArgs, Task>? ImageUploadEnded { get; set; }
 
         /// <summary>
         /// The endpoint where the images data will be sent, via an asynchronous POST request. The server is supposed to
@@ -308,13 +308,13 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Notifies the progress of image being written to the destination stream.
         /// </summary>
         [Parameter]
-        public Func<FileProgressedEventArgs, Task> ImageUploadProgressed { get; set; }
+        public Func<FileProgressedEventArgs, Task>? ImageUploadProgressed { get; set; }
 
         /// <summary>
         /// Occurs when an individual image upload has started.
         /// </summary>
         [Parameter]
-        public Func<FileStartedEventArgs, Task> ImageUploadStarted { get; set; }
+        public Func<FileStartedEventArgs, Task>? ImageUploadStarted { get; set; }
 
         /// <summary>
         /// If set to true, enables line numbers in the editor.
@@ -596,7 +596,10 @@ namespace PSC.Blazor.Components.MarkdownEditor
             if(string.IsNullOrEmpty(ImageUploadEndpoint))
                 await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
 
-            await ImageUploadStarted.Invoke(new(fileInfo));
+            if (ImageUploadStarted is not null)
+            {
+                await ImageUploadStarted?.Invoke(new(fileInfo));
+            }
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -606,7 +609,10 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
                 byte[] file = Convert.FromBase64String(fileInfo.ContentBase64);
 
-                await ImageUploadProgressed.Invoke(new(fileInfo, 25.0));
+                if (ImageUploadProgressed is not null)
+                {
+                    await ImageUploadProgressed.Invoke(new(fileInfo, 25.0));
+                }
 
                 using var form = new MultipartFormDataContent();
                 using var fileContent = new ByteArrayContent(file);
@@ -614,7 +620,10 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
                 form.Add(fileContent, "file", fileInfo.Name);
 
-                await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
+                if (ImageUploadProgressed is not null)
+                {
+                    await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
+                }
 
                 bool success = false;
                 try
@@ -622,7 +631,10 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     var response = await httpClient.PostAsync(ImageUploadEndpoint, form);
                     response.EnsureSuccessStatusCode();
 
-                    await ImageUploadProgressed.Invoke(new(fileInfo, 100));
+                    if (ImageUploadProgressed is not null)
+                    {
+                        await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
+                    }
 
                     if (response.IsSuccessStatusCode)
                     {
