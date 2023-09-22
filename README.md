@@ -201,16 +201,37 @@ erDiagram
 
 This script is not included in the component but the component can detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
 
-To enable this function, add the script in your project and then in the `index.html` add the following lines
+To enable this function, add the script to your project and then in the `index.html` add the following lines
 
 ```
 <link rel="stylesheet" href="/path/to/styles/default.min.css">
 <script src="/path/to/highlight.min.js"></script>
 ```
 
-### Known issue using mermaid and Highlight.js
+### Known issue using Mermaid and Highlight.js
 
 If both libraries are loaded in the _index.html_, the mermaid render will not work. 
+
+## Alerts
+
+In the Markdown, there are some missing tags to display some useful information on the page like a highlight note, a tip, a warning or an attention message. So, I added them in this Markdown Editor. An example of the result of this implementation is in the following screenshot.
+
+![Alerts](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/46b0ba60-235e-45e6-831b-b5f3dbad2ba4)
+
+To add the message, click on the icons in the toolbar in the editor or add those commands:
+
+| Command | Color  | Description                   |
+|---------|--------|-------------------------------|
+| ```att  | Red    | Display an attention message  |
+| ```note | Azure  | Add a note in the documentt   |
+| ```tip  | Green  | Shows a tip message           |
+| ```warn | Orange | This is a warning message     |
+
+In the Markdown Editor component, there is a `CSS` for the them called `alert.css` and you can add it to the `index.html` with this line
+
+```
+<link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/alert.css" rel="stylesheet" />
+```
 
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:
