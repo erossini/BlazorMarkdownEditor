@@ -42,7 +42,7 @@ In a `Razor` page, we can add the component with these lines
 </div>
 
 @code {
-    string markdownValue = "#Markdown Editor\nThis is a test";
+    string markdownValue = "# Markdown Editor\nThis is a test";
     string markdownHtml;
 
     Task OnMarkdownValueChanged(string value)
