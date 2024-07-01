@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownEditorDemo", "Markd
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other files", "Other files", "{E62D6583-788F-4BDE-833F-6EE650453874}"
 	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

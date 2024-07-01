@@ -1,5 +1,7 @@
 # Blazor Markdown Editor
-This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET6. The component is based on [EasyMDE](https://easy-markdown-editor.tk/) version _2.18.0_ to create the editor. 
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET8. The component is based on [EasyMDE](https://github.com/erossini/EasyMarkdownEditor) version _1.0.x_ to create the editor. 
+I decided to create my repository for the JavaScript library because I wanted to have control over the updates and the changes. The component is a wrapper around the JavaScript library and it is a Blazor component that allows you to use the Markdown Editor in your Blazor application.
+
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
 
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
@@ -42,7 +44,7 @@ In a `Razor` page, we can add the component with these lines
 </div>
 
 @code {
-    string markdownValue = "# Markdown Editor\nThis is a test";
+    string markdownValue = "#Markdown Editor\nThis is a test";
     string markdownHtml;
 
     Task OnMarkdownValueChanged(string value)
@@ -201,14 +203,14 @@ erDiagram
 
 This script is not included in the component but the component can detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
 
-To enable this function, add the script to your project and then in the `index.html` add the following lines
+To enable this function, add the script in your project and then in the `index.html` add the following lines
 
 ```
 <link rel="stylesheet" href="/path/to/styles/default.min.css">
 <script src="/path/to/highlight.min.js"></script>
 ```
 
-### Known issue using Mermaid and Highlight.js
+### Known issue using mermaid and Highlight.js
 
 If both libraries are loaded in the _index.html_, the mermaid render will not work. 
 
@@ -231,6 +233,30 @@ In the Markdown Editor component, there is a `CSS` for the them called `alert.cs
 
 ```
 <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/alert.css" rel="stylesheet" />
+```
+
+## Clean saved documentation
+
+By default, the Markdown Editor saves the text in the browser local storage. 
+
+The `AutoSaveEnabled` is `True` and the `AutoSaveSubmitDelay` is set up to `5000` milliseconds. This means that the text is saved every 5 seconds.
+
+If you want to clean the saved text, you can use the following code
+
+```
+<MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
+                ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                SpellChecker="false" @ref="Markdown1" 
+                AutoSaveEnabled="true" />
+
+@code {
+    MarkdownEditor Markdown1;
+
+    async Task DeleteStorage()
+    {
+        await Markdown1.CleanAutoSave();
+    }
+}
 ```
 
 ## Documentation

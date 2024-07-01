@@ -2,7 +2,7 @@
 @inject IJSRuntime JSRuntime
 
 <CascadingValue Value="@this" IsFixed="true">
-    <textarea @ref="@ElementRef" id="@ElementId">
+    <textarea @ref="@ElementRef" id="@ElementId" class="@CSSClass">
         @if (Toolbar != null)
         {
             @Toolbar

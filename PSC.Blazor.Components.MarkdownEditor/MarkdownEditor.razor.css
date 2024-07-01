@@ -6,3 +6,20 @@
 button.table {
     width: 30px !important;
 }
+
+div.grippie {
+    background: #EEEEEE url(grippie.png) no-repeat scroll center 2px;
+    border-color: #DDDDDD;
+    border-style: solid;
+    border-width: 0pt 1px 1px;
+    cursor: s-resize;
+    height: 9px;
+    overflow: hidden;
+}
+
+.resizable-textarea textarea {
+    display: block;
+    margin-bottom: 0pt;
+    width: 50%;
+    height: 30%;
+}

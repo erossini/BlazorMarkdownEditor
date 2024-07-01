@@ -59,9 +59,34 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                 "undo", "redo", "|", "code",
                 {
                     name: "addMermaid",
-                    action: drawRedText,
+                    action: renderMermaid,
                     className: "fas fa-pie-chart",
                     title: "Add Mermaid",
+                },
+                "|",
+                {
+                    name: "addAttention",
+                    action: renderAttention,
+                    className: "fas fas fa-exclamation-circle",
+                    title: "Add Attention",
+                },
+                {
+                    name: "addNote",
+                    action: renderNote,
+                    className: "fas fa-info-circle",
+                    title: "Add Note",
+                },
+                {
+                    name: "addTip",
+                    action: renderTip,
+                    className: "fas fa-lightbulb",
+                    title: "Add Tip",
+                },
+                {
+                    name: "addWarning",
+                    action: renderWarning,
+                    className: "fas fa-exclamation-triangle",
+                    title: "Add Warning",
                 },
                 "|", "quote", "unordered-list", "ordered-list", "|", 
                 "link", "image", "table", "|", "fullscreen",
@@ -76,7 +101,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         showIcons: options.showIcons,
         renderingConfig: {
             singleLineBreaks: false,
-            codeSyntaxHighlighting: true,
+            codeSyntaxHighlighting: false,
             markedOptions: {
                 langPrefix: "",
                 highlight: function (code, lang) {
@@ -86,6 +111,26 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                     else if (lang === "code" && hljsInstalled) {
                         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                         return hljs.highlight(code, { language }).value;
+                    }
+                    else if (lang === "att") {
+                        return '<div class="me-alert callout attention"><p class="title">' +
+                            '<span class="me-icon icon-attention"></span> Attention</p><p>' +
+                            code + '</p></div>';
+                    }
+                    else if (lang === "tip") {
+                        return '<div class="me-alert callout tip"><p class="title">' +
+                            '<span class="me-icon icon-tip"></span> Tip</p><p>' +
+                            code + '</p></div>';
+                    }
+                    else if (lang === "note") {
+                        return '<div class="me-alert callout note"><p class="title">' +
+                            '<span class="me-icon icon-note"></span> Note</p><p>' +
+                            code + '</p></div>';
+                    }
+                    else if (lang === "warn") {
+                        return '<div class="me-alert callout warning"><p class="title">' +
+                            '<span class="me-icon icon-warning"></span> Warning</p><p>' +
+                            code + '</p></div>';
                     }
                     else
                         return code;
@@ -135,13 +180,53 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
     });
 
-    function drawRedText(editor) {
+    function renderAttention(editor) {
         var cm = editor.codemirror;
         var output = '';
         var selectedText = cm.getSelection();
         var text = selectedText || '';
 
-        output = '```mermaid' + text + '\r\n```';
+        output = '```att\r\n' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
+
+    function renderMermaid(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```mermaid\r\n' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
+
+    function renderNote(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```note\r\n' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
+
+    function renderWarning(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```warn\r\n' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
+
+    function renderTip(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```tip\r\n' + text + '\r\n```';
         cm.replaceSelection(output);
     }
 
@@ -155,6 +240,28 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     // update the first time
     var text = easyMDE.value();
     dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
+}
+
+function allowResize(id) {
+    $(document).ready(function () {
+        $('#' + id + '.resizable:not(.processed)').TextAreaResizer();
+    });
+}
+
+function deleteAutoSave(id) {
+    $.each(localStorage, function (key, str) {
+        if (key.startsWith('smde_' + id)) {
+            localStorage.removeItem("smde_" + id);
+        }
+    });
+}
+
+function deleteAllAutoSave() {
+    $.each(localStorage, function (key, str) {
+        if (key.startsWith('smde_')) {
+            localStorage.removeItem(key);
+        }
+    });
 }
 
 function destroy(element, elementId) {

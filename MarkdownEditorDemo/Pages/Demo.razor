@@ -2,10 +2,11 @@
 
 <div class="col-md-12">
     <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
-                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
-                    SpellChecker="false" @ref="Markdown1" />
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
+                    SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
 
     <button @onclick="ChangeText">Change text</button>
+    <button @onclick="DeleteStorage">Delete Local Storage</button>
     <hr />
 
     <h3>Result</h3>
@@ -29,13 +30,22 @@
                            "## Add a mermaid graph\nFrom now on, the Markdown Editor can render mermaid graph. " + 
                            "See the [documentation](https://mermaid.js.org/intro/).\n\n" +
                            "```mermaid\nstateDiagram\n    [*] --> Still\n    Still --> [*]\n\n    Still --> Moving\n    " + 
-                           "Moving --> Still\n    Moving --> Crash\n    Crash --> [*]\n```\n";
+                           "Moving --> Still\n    Moving --> Crash\n    Crash --> [*]\n```\n\n" +
+                           "```att\nThis is an example of attention message\n```\n\n" +
+                           "```note\nThis is a simple note message to add in the page\n```\n\n" +
+                           "```tip\nThis is a tip to highlight some information\n```\n\n" +
+                           "```warn\nIf you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. \n```\n\n";
     string markdownHtml;
 
     async Task ChangeText()
     {
         markdownValue = "Test!";
         await Markdown1.SetValueAsync(markdownValue);
+    }
+
+    async Task DeleteStorage()
+    {
+        await Markdown1.CleanAutoSave();
     }
 
     Task OnMarkdownValueChanged(string value)

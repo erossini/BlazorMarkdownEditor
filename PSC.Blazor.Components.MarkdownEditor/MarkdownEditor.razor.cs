@@ -5,6 +5,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
     /// <summary>
     /// Markdown Editor
     /// </summary>
+    /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
     public partial class MarkdownEditor : IDisposable
     {
@@ -104,6 +105,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </value>
         [Parameter]
         public string AutoSaveId { get; set; }
+
         /// <summary>
         /// Gets or sets the automatic save submit delay.
         /// Delay before assuming that submit of the form failed and saving the text, in milliseconds.
@@ -200,10 +202,24 @@ namespace PSC.Blazor.Components.MarkdownEditor
         #region Parameters
 
         /// <summary>
+        /// Gets or sets a value indicating whether the textarea where the component is hosted can be resizable.
+        /// </summary>
+        /// <value><c>null</c> if it contains no value, <c>true</c> if the textarea has to be resized by the user; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool? AllowResize { get; set; }
+
+        /// <summary>
         /// If set to true, force downloads Font Awesome (used for icons). If set to false, prevents downloading.
         /// </summary>
         [Parameter]
         public bool? AutoDownloadFontAwesome { get; set; }
+
+        /// <summary>
+        /// Gets or sets the CSS class.
+        /// </summary>
+        /// <value>The CSS class.</value>
+        [Parameter]
+        public string? CSSClass { get; set; }
 
         /// <summary>
         /// rtl or ltr. Changes text direction to support right-to-left languages. Defaults to ltr.
@@ -333,7 +349,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Should be a string containing a valid CSS value like "500px". Defaults to undefined.
         /// </summary>
         [Parameter]
-        public string MaxHeight { get; set; }
+        public string MaxHeight { get; set; } = "300px";
 
         /// <summary>
         /// Gets or sets the max chunk size when uploading the file.
@@ -439,6 +455,22 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [Parameter]
         public string ValueHTML { get; set; }
         #endregion Parameters
+
+        /// <summary>
+        /// Cleans all automatic save.
+        /// </summary>
+        public async Task CleanAllAutoSave()
+        {
+            await JSModule.DeleteAllAutoSave();
+        }
+
+        /// <summary>
+        /// Cleans the automatic save in the local storage in the browser
+        /// </summary>
+        public async Task CleanAutoSave()
+        {
+            await JSModule.DeleteAutoSave(AutoSaveId);
+        }
 
         /// <summary>
         /// Gets the markdown value.
@@ -597,9 +629,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
 
             if (ImageUploadStarted is not null)
-            {
-                await ImageUploadStarted?.Invoke(new(fileInfo));
-            }
+                await ImageUploadStarted.Invoke(new(fileInfo));
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -610,9 +640,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 byte[] file = Convert.FromBase64String(fileInfo.ContentBase64);
 
                 if (ImageUploadProgressed is not null)
-                {
                     await ImageUploadProgressed.Invoke(new(fileInfo, 25.0));
-                }
 
                 using var form = new MultipartFormDataContent();
                 using var fileContent = new ByteArrayContent(file);
@@ -621,9 +649,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 form.Add(fileContent, "file", fileInfo.Name);
 
                 if (ImageUploadProgressed is not null)
-                {
                     await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
-                }
 
                 bool success = false;
                 try
@@ -632,9 +658,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     response.EnsureSuccessStatusCode();
 
                     if (ImageUploadProgressed is not null)
-                    {
-                        await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
-                    }
+                        await ImageUploadProgressed.Invoke(new(fileInfo, 100));
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -752,6 +776,12 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     },
                     ErrorMessages,
                 });
+
+                if (AllowResize != null && (bool)AllowResize)
+                {
+                    CSSClass += " resizable";
+                    await JSModule.AllowResize(ElementId);
+                }
 
                 Initialized = true;
             }
