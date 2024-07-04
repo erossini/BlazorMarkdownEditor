@@ -17,16 +17,20 @@ Add the Editor to your ```_Imports.razor```
 @using PSC.Blazor.Components.MarkdownEditor.EventsArgs
 ```
 
-Then, in your `index.html` or `host.html` add those lines:
+Then, in your `index.html`, `host.html` or `App.razor` add those lines:
 
 ```
+<link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/markdowneditor.css" rel="stylesheet" />
 <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
 
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-Remember that `jQuery` is also required. The component cointains the [EasyMDE](https://easy-markdown-editor.tk/) script version 2.18.0. Obviously, you can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+Remember that `jQuery` is also required. The component contains the [Easy Markdown Editor](https://github.com/erossini/EasyMarkdownEditor) script version 1.0.x that is also maintain by myself. 
+You can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
+
+The CSS `markdowneditor.css` contains the style for same of the new tags I added in the Markdown Editor such as `att`, `note`, `tip`, `warn` and `video`.
 
 ### Add MarkdownEditor in a page
 
@@ -159,6 +163,44 @@ The script will check if this library is called. If it is added to the page, the
     ```
 ```
 
+### Warning
+
+Using this script in the component 
+
+```
+<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
+```
+
+or the cdn
+
+```
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+```
+
+the mermaid render will not work. The error is 
+
+> e.replace is not a function
+
+So, I recommend to upgrade the script with the new one as I describe in the following paragraph.
+
+#### Upgrade to version 10.9.1 or above
+
+Using the new version of Mermaid from the 10.9.1 requires adding this code in the `index.html`, `host.html` or `App.razor`
+
+```
+<script type="module">
+    import mermaid 
+        from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script>
+```
+
+At the moment, I'm trying to find a way to include this script in the `markdownEditor.js` but I'm not sure it will work.
+
+### Examples of mermaid graphs
+
+```javascript
+
 ### An example of the mermaid graphs
 A **Sequence diagram** is an interaction diagram that shows how processes operate with one another and in what order.
 
@@ -225,11 +267,11 @@ To add the message, click on the icons in the toolbar in the editor or add those
 | Command | Color  | Description                   |
 |---------|--------|-------------------------------|
 | ```att  | Red    | Display an attention message  |
-| ```note | Azure  | Add a note in the documentt   |
+| ```note | Azure  | Add a note in the document    |
 | ```tip  | Green  | Shows a tip message           |
 | ```warn | Orange | This is a warning message     |
 
-In the Markdown Editor component, there is a `CSS` for the them called `alert.css` and you can add it to the `index.html` with this line
+In the Markdown Editor component, there is a `CSS` for the them called `alert.css` and you can add it to the `index.html` with this line if you haven't add the `markdowneditor.css`
 
 ```
 <link href="/_content/PSC.Blazor.Components.MarkdownEditor/css/alert.css" rel="stylesheet" />
@@ -259,6 +301,17 @@ If you want to clean the saved text, you can use the following code
 }
 ```
 
+## Video
+
+In the Markdown Editor, you can add a video in the text. The video can be from YouTube, Vimeo or any other video provider. 
+The video is displayed in the editor and in the rendered HTML code.
+
+```
+    ```video
+	https://www.youtube.com/shorts/JY1zFZgX6zM
+    ```
+```
+
 ## Documentation
 The Markdown Editor for Blazor has a estensive collection of properties to map all the functionalities in the JavaScript version. In this repository, there are 2 projects:
 - **MarkdownEditorDemo** is a Blazor Web Assembly project that contains 2 pages: `Index.razor` where I show how to use the component with the basic functions and `Upload.razor` that shows how to cope with the image upload. To test the upload, the project `MarkdownEditorDemo.Api` must run
@@ -279,6 +332,7 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 |AutoSaveTimeFormatHour|Set the format for the hour|string|2-digit|
 |AutoSaveTimeFormatMinute|Set the format for the minute|string|2-digit|
 |AutoDownloadFontAwesome|If set to true, force downloads Font Awesome (used for icons). If set to false, prevents downloading.|bool?|null|
+|CharactersStatusText|Set the words to display in the statusbar for the character's counting|string|`characters: `|
 |CustomButtonClicked|Occurs after the custom toolbar button is clicked.|EventCallback<MarkdownButtonEventArgs>||
 |Direction|rtl or ltr. Changes text direction to support right-to-left languages. Defaults to ltr.|string|ltr|
 |ErrorMessages|Errors displayed to the user, using the errorCallback option, where _image_name_, _image_size_ and _image_max_size_ will be replaced by their respective values, that can be used for customization or internationalization.|MarkdownErrorMessages||
@@ -291,7 +345,9 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 |ImageUploadAuthenticationSchema|If an authentication for the API is required, assign to this property the schema to use. `Bearer` is the common one.|string|empty|
 |ImageUploadAuthenticationToken|If an authentication for the API is required, assign to this property the token|string|empty|
 |LineNumbers|If set to true, enables line numbers in the editor.|bool|false|
+|LinesStatusText|Set the words to display in the statusbar for the line's counting|string|`lines: `|
 |LineWrapping|If set to false, disable line wrapping. Defaults to true.|bool|false|
+|MarkdownUrl|Set the URL for the Markdown guide.|[Link to Markdown Guide](https://www.markdownguide.org/basic-syntax/)||
 |MaxHeight|Sets fixed height for the composition area. minHeight option will be ignored. Should be a string containing a valid CSS value like "500px". Defaults to undefined.|string||
 |MaxUploadImageMessageSize|Gets or sets the max message size when uploading the file.|long|20 * 1024|
 |MinHeight|Sets the minimum height for the composition area, before it starts auto-growing. Should be a string containing a valid CSS value like "500px". Defaults to "300px".|string|300px|
@@ -307,6 +363,7 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 |UploadImage|If set to true, enables the image upload functionality, which can be triggered by drag-drop, copy-paste and through the browse-file window (opened when the user clicks on the upload-image icon). Defaults to false.|bool|false|
 |Value|Gets or sets the markdown value.|string|null|
 |ValueHTML|Gets the HTML from the markdown value.|string|null|
+|WordsStatusText|Set the words to display in the statusbar for the word's counting|string|`words: `|
 
 ### Events
 |Name|Description|Type|

@@ -88,7 +88,13 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                     className: "fas fa-exclamation-triangle",
                     title: "Add Warning",
                 },
-                "|", "quote", "unordered-list", "ordered-list", "|", 
+                {
+                    name: "addVideo",
+                    action: renderVideo,
+                    className: "fa-solid fa-video",
+                    title: "Add video",
+                },
+                "|", "video", "|", "quote", "unordered-list", "ordered-list", "|", 
                 "link", "image", "table", "|", "fullscreen",
                 "preview", "|", "guide"
             ];
@@ -106,7 +112,12 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                 langPrefix: "",
                 highlight: function (code, lang) {
                     if (lang === "mermaid" && mermaidInstalled) {
-                        return mermaid.mermaidAPI.render('mermaid0', code, undefined);
+                        var tempDiv = document.createElement("div");
+                        tempDiv.className = "mermaid-container";
+
+                        var svg = mermaid.render("mermaid0", code);
+                        tempDiv.innerHTML = svg;
+                        return tempDiv;
                     }
                     else if (lang === "code" && hljsInstalled) {
                         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
@@ -131,6 +142,19 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                         return '<div class="me-alert callout warning"><p class="title">' +
                             '<span class="me-icon icon-warning"></span> Warning</p><p>' +
                             code + '</p></div>';
+                    }
+                    else if (lang === "video") {
+                        var videoCode = '<div class="video-container">';
+
+                        if (code.includes("youtube.com") || code.includes("youtu.be"))
+                            videoCode = videoCode + '<iframe width="560" height="315" src="' + code + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                        else if (code.includes("vimeo.com"))
+                            videoCode = videoCode + '<iframe src="' + code + '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+                        else
+                            videoCode = videoCode + '<video controls><source src="' + code + '" type="video/mp4"></video>';
+
+                        videoCode = videoCode + '</div>';
+                        return videoCode;
                     }
                     else
                         return code;
@@ -210,6 +234,16 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         cm.replaceSelection(output);
     }
 
+    function renderTip(editor) {
+        var cm = editor.codemirror;
+        var output = '';
+        var selectedText = cm.getSelection();
+        var text = selectedText || '';
+
+        output = '```tip\r\n' + text + '\r\n```';
+        cm.replaceSelection(output);
+    }
+
     function renderWarning(editor) {
         var cm = editor.codemirror;
         var output = '';
@@ -220,13 +254,13 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         cm.replaceSelection(output);
     }
 
-    function renderTip(editor) {
+    function renderVideo(editor) {
         var cm = editor.codemirror;
         var output = '';
         var selectedText = cm.getSelection();
         var text = selectedText || '';
 
-        output = '```tip\r\n' + text + '\r\n```';
+        output = '```video\r\n' + text + '\r\n```';
         cm.replaceSelection(output);
     }
 
@@ -244,7 +278,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
 
 function allowResize(id) {
     $(document).ready(function () {
-        $('#' + id + '.resizable:not(.processed)').TextAreaResizer();
+        //$('#' + id + '.resizable:not(.processed)').TextAreaResizer();
     });
 }
 
@@ -385,3 +419,19 @@ const meLoadScript = function (name, url) {
         document.head.appendChild(script);
     });
 };
+
+window.renderMermaidDiagram = async () => {
+    const collection = document.getElementsByTagName("code");
+
+    for (let i = 0; i < collection.length; i++) {
+        if (collection[i].classList.contains("mermaid")) {
+            try {
+                console.log(collection[i].innerHTML);
+                var svg = await mermaid.render("theGraph", collection[i].innerHTML);
+                collection[i].innerHTML = svg;
+            } catch (error) {
+                collection[i].innerHTML = "Invalid syntax. " + error; // Display error message
+            }
+        }
+    }
+} 

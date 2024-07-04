@@ -215,6 +215,13 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public bool? AutoDownloadFontAwesome { get; set; }
 
         /// <summary>
+        /// Gets or sets the characters status text.
+        /// </summary>
+        /// <value>The characters status text.</value>
+        [Parameter]
+        public string? CharactersStatusText { get; set; } = "characters: ";
+
+        /// <summary>
         /// Gets or sets the CSS class.
         /// </summary>
         /// <value>The CSS class.</value>
@@ -345,6 +352,20 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public bool LineWrapping { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the lines status text.
+        /// </summary>
+        /// <value>The lines status text.</value>
+        [Parameter]
+        public string? LinesStatusText { get; set; } = "lines: ";
+
+        /// <summary>
+        /// Gets or sets the markdown explanation URL.
+        /// </summary>
+        /// <value>The markdown explanation URL.</value>
+        [Parameter]
+        public string? MarkdownUrl { get; set; }
+
+        /// <summary>
         /// Sets fixed height for the composition area. minHeight option will be ignored.
         /// Should be a string containing a valid CSS value like "500px". Defaults to undefined.
         /// </summary>
@@ -454,6 +475,14 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </summary>
         [Parameter]
         public string ValueHTML { get; set; }
+
+        /// <summary>
+        /// Gets or sets the words status text.
+        /// </summary>
+        /// <value>The words status text.</value>
+        [Parameter]
+        public string? WordsStatusText { get; set; } = "words: ";
+
         #endregion Parameters
 
         /// <summary>
@@ -749,6 +778,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     ShowIcons,
                     LineNumbers,
                     LineWrapping,
+                    MarkdownUrl,
                     MinHeight,
                     MaxHeight,
                     Placeholder,
@@ -757,6 +787,13 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     Direction,
                     NativeSpellChecker,
                     SpellChecker,
+                    StatusTexts = new
+                    {
+                        Autosave = AutoSaveText,
+                        Characters = CharactersStatusText,
+                        Lines = LinesStatusText,
+                        Words = WordsStatusText,
+                    },
                     Toolbar = Toolbar != null && toolbarButtons?.Count > 0 ? MarkdownActionProvider.Serialize(toolbarButtons) : null,
                     ToolbarTips,
                     UploadImage,
