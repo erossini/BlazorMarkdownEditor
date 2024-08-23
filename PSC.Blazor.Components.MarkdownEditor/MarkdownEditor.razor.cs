@@ -339,6 +339,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [Parameter]
         public Func<FileStartedEventArgs, Task>? ImageUploadStarted { get; set; }
 
+        [Parameter]
+        public Func<MarkdownEditor, FileEntry, Task<FileEntry>>? CustomImageUpload { get; set; }
+
         /// <summary>
         /// If set to true, enables line numbers in the editor.
         /// </summary>
@@ -651,6 +654,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [JSInvokable]
         public async Task UploadFile(FileEntry fileInfo)
         {
+            bool success = false;
+
             if (fileInfo is null || string.IsNullOrEmpty(fileInfo.ContentBase64))
                 await JSModule.NotifyImageUploadError(ElementId, $"Can't upload an empty file");
 
@@ -659,6 +664,27 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
             if (ImageUploadStarted is not null)
                 await ImageUploadStarted.Invoke(new(fileInfo));
+
+            if (CustomImageUpload is not null)
+            {
+                try
+                {
+                    fileInfo = await CustomImageUpload.Invoke(this, fileInfo);
+
+                    success = true;
+                }
+                catch (Exception ex)
+                {
+                    fileInfo.ErrorMessage = ex.Message;
+                }
+
+                if (ImageUploadProgressed is not null)
+                    await ImageUploadProgressed.Invoke(new(fileInfo, 100));
+
+                await UpdateFileEndedAsync(fileInfo, success, fileInfo.ErrorMessage);
+
+                return;
+            }
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -680,7 +706,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 if (ImageUploadProgressed is not null)
                     await ImageUploadProgressed.Invoke(new(fileInfo, 50.0));
 
-                bool success = false;
                 try
                 {
                     var response = await httpClient.PostAsync(ImageUploadEndpoint, form);
