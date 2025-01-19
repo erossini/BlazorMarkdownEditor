@@ -503,3 +503,7 @@ The contribution gives you:
 *   [Modal Dialog component for Blazor](https://www.puresourcecode.com/dotnet/blazor/modal-dialog-component-for-blazor/)
 *   [Create Tooltip component for Blazor](https://www.puresourcecode.com/dotnet/blazor/create-tooltip-component-for-blazor/)
 *   [Consume ASP.NET Core Razor components from Razor class libraries | Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/class-libraries?view=aspnetcore-5.0&tabs=visual-studio)
+
+---
+
+[<img src="https://api.gitsponsors.com/api/badge/img?id=424906310" height="20">](https://api.gitsponsors.com/api/badge/link?p=PtrFLcw+fTVmFwdIWEGsWP5rHdSz1skPQCvo5xNJo3o+J+sRtHYDId1aoPXJyPLf)
