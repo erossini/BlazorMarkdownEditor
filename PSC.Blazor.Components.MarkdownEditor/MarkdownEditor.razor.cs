@@ -426,6 +426,12 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public bool SpellChecker { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value controlling whether the preview should be enabled by default (default off).
+        /// </summary>
+        [Parameter]
+        public bool Preview { get; set; } = false;
+
+        /// <summary>
         /// If set, customize the tab size. Defaults to 2.
         /// </summary>
         [Parameter]
@@ -557,6 +563,32 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
 
             await InvokeAsync(StateHasChanged);
+        }
+
+        /// <summary>
+        /// Toggles preview mode
+        /// </summary>
+        public async Task TogglePreviewAsync()
+        {
+            if (!Initialized)
+                return;
+
+            await JSModule.TogglePreview(ElementId);
+        }
+
+        /// <summary>
+        /// Enables or disables the preview
+        /// </summary>
+        /// <param name="elementId">The element identifier.</param>
+        public async Task SetPreviewAsync(bool wantedState)
+        {
+            if (!Initialized)
+                return;
+
+            await JSModule.SetPreview(ElementId, wantedState);
+
+            // Keep track of the state to support changing the state with the Preview parameter
+            _currentPreviewState = Preview;
         }
 
         /// <summary>
@@ -751,6 +783,22 @@ namespace PSC.Blazor.Components.MarkdownEditor
             toolbarButtons.Remove(toolbarButton);
         }
 
+        private bool? _currentPreviewState = null;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            // Save initial state
+            if (_currentPreviewState is null)
+            {
+                _currentPreviewState = Preview;
+            }
+
+            if (Initialized && _currentPreviewState != Preview)
+            {
+                await SetPreviewAsync(Preview);
+            }
+        }
+
         /// <summary>
         /// Method invoked after each time the component has been rendered. Note that the component does
         /// not automatically re-render after the completion of any returned <see cref="T:System.Threading.Tasks.Task" />, because
@@ -837,6 +885,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                         ImageTexts.SizeUnits,
                     },
                     ErrorMessages,
+                    Preview,
                 });
 
                 if (AllowResize != null && (bool)AllowResize)

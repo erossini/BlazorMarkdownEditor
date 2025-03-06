@@ -1,28 +1,41 @@
-﻿@page "/demo"
+﻿@page "/preview"
 
 <div class="col-md-12">
-    @if(isVisible)
-    {
-        <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
-        ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
-        SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
-    }
 
-    <button @onclick="ChangeText">Change text</button>
-    <button @onclick="DeleteStorage">Delete Local Storage</button>
-    <button @onclick="ToggleVisibility">Toggle Visibility</button>
-    
+    <h1>Control preview mode with the Preview parameter</h1>
+
+    <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px" 
+        AllowResize="true" Preview="@_preview"
+        SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="false">
+        <Toolbar>
+            <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bold" Title="Bold" />
+        </Toolbar>
+    </MarkdownEditor>
+
+    <button @onclick="() => _preview = true">Preview ON</button>
+    <button @onclick="() => _preview = false">Preview OFF</button>
+
     <hr />
 
-    <h3>Result</h3>
-    @((MarkupString)markdownHtml)
+    <h2>Preview mode can be controlled with the Preview parameter</h2>
+    <MarkdownEditor Value="@exampleRazor" Preview="true"></MarkdownEditor>
 
-    <h3>Value</h3>
-    @((MarkupString)markdownValue)
+    <hr />
+    <h2>Enable or disable preview from code using SetPreviewAsync()</h2>
+    <MarkdownEditor Value="@exampleCsharp" Preview="true"></MarkdownEditor>
+
+    <hr />
+    <h2>Preview can be toggled from code using TogglePreviewAsync()</h2>
+    <MarkdownEditor Value="@exampleCsharpToggle" Preview="true"></MarkdownEditor>
+
 </div>
 
 @code {
     MarkdownEditor Markdown1;
+
+    string exampleRazor = "```html\n<MarkdownEditor @ref=\"Markdown1\" Preview=\"true\">\n</MarkdownEditor>\n```";
+    string exampleCsharp = "```csharp\nawait MarkdownEditor1.SetPreviewAsync(true);\n```";
+    string exampleCsharpToggle = "```csharp\nawait MarkdownEditor1.TogglePreviewAsync();\n```";
 
     string markdownValue = "# Markdown Editor for Blazor\nThis component is using [EasyMDE](https://easy-markdown-editor.tk/) " +
                            "to display a nice editor and all functionalities are mapped. See the documentation for more details.\n\n" +
@@ -41,34 +54,5 @@
                            "```tip\nThis is a tip to highlight some information\n```\n\n" +
                            "```warn\nIf you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. \n```\n\n";
     string markdownHtml;
-
-    bool isVisible = true;
-
-    void ToggleVisibility()
-    {
-        isVisible = !isVisible;
-    }
-
-    async Task ChangeText()
-    {
-        markdownValue = "Test!";
-        await Markdown1.SetValueAsync(markdownValue);
-    }
-
-    async Task DeleteStorage()
-    {
-        await Markdown1.CleanAutoSave();
-    }
-
-    Task OnMarkdownValueChanged(string value)
-    {
-        markdownValue = value;
-        return Task.CompletedTask;
-    }
-
-    Task OnMarkdownValueHTMLChanged(string value)
-    {
-        markdownHtml = value;
-        return Task.CompletedTask;
-    }
+    private bool _preview = true;
 }

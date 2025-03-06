@@ -139,5 +139,26 @@
             await jsRuntime.InvokeVoidAsync("setValue", elementId, value);
             await jsRuntime.InvokeVoidAsync("setInitValue", elementId, value);
         }
+
+        /// <summary>
+        /// Toggles preview mode.
+        /// </summary>
+        /// <param name="elementId">The element identifier.</param>
+        /// <returns></returns>
+        public async ValueTask TogglePreview(string elementId)
+        {
+            await jsRuntime.InvokeVoidAsync("togglePreview", elementId);
+        }
+
+        /// <summary>
+        /// Enables or disables the preview
+        /// </summary>
+        /// <param name="elementId">The element identifier.</param>
+        /// <param name="wantedState">If true preview will be enabled</param>
+        /// <returns></returns>
+        public async ValueTask SetPreview(string elementId, bool wantedState)
+        {
+            await jsRuntime.InvokeVoidAsync("setPreview", elementId, wantedState);
+        }
     }
 }
