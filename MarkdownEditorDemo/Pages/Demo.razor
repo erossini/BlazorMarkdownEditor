@@ -1,12 +1,16 @@
 ﻿@page "/demo"
 
 <div class="col-md-12">
-    <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
-                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
-                    SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
+    @if(isVisible)
+    {
+        <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
+        ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
+        SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
+    }
 
     <button @onclick="ChangeText">Change text</button>
     <button @onclick="DeleteStorage">Delete Local Storage</button>
+    <button @onclick="ToggleVisibility">Toggle Visibility</button>
     <hr />
 
     <h3>Result</h3>
@@ -36,6 +40,13 @@
                            "```tip\nThis is a tip to highlight some information\n```\n\n" +
                            "```warn\nIf you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. If you want to warn a user about something, this is an example. \n```\n\n";
     string markdownHtml;
+
+    bool isVisible = true;
+
+    void ToggleVisibility()
+    {
+        isVisible = !isVisible;
+    }
 
     async Task ChangeText()
     {

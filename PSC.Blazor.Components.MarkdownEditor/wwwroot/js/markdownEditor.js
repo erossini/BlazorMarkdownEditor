@@ -300,6 +300,13 @@ function deleteAllAutoSave() {
 
 function destroy(element, elementId) {
     const instances = _instances || {};
+
+    // Fix for #54: Remove from DOM when MarkdownEditor is disposed
+    const instance = _instances[elementId];
+    if (instance && instance.editor) {
+        instance.editor.toTextArea();
+    }
+
     delete instances[elementId];
 }
 
