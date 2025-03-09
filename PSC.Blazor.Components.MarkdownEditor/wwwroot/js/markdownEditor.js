@@ -119,10 +119,6 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                         tempDiv.innerHTML = svg;
                         return tempDiv;
                     }
-                    else if (lang === "code" && hljsInstalled) {
-                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                        return hljs.highlight(code, { language }).value;
-                    }
                     else if (lang === "att") {
                         return '<div class="me-alert callout attention"><p class="title">' +
                             '<span class="me-icon icon-attention"></span> Attention</p><p>' +
@@ -156,8 +152,11 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                         videoCode = videoCode + '</div>';
                         return videoCode;
                     }
-                    else
-                        return code;
+                    else if (lang && hljsInstalled) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, { language }).value;
+                    }
+                    return code;
                 }
             }
         },
@@ -271,6 +270,14 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         imageUploadNotifier: imageUploadNotifier
     };
 
+    if (options.preview === true) {
+        // Set initial state to preview if requested
+        const isActive = easyMDE.isPreviewActive()
+        if (!isActive) {
+            easyMDE.togglePreview();
+        }
+    }
+
     // update the first time
     var text = easyMDE.value();
     dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
@@ -298,8 +305,43 @@ function deleteAllAutoSave() {
     });
 }
 
+/**
+ * Toggles preview for the specified element
+ * @param {string} elementId
+ */
+function togglePreview(elementId) {
+    const instance = _instances[elementId];
+    if (instance && instance.editor) {
+        instance.editor.togglePreview();
+    }
+}
+
+/**
+ * Acticates or deactives preview mode for the specified element
+ * @param {string} elementId
+ * @param {boolean} wantedState
+ */
+function setPreview(elementId, wantedState) {
+    const instance = _instances[elementId];
+    if (instance && instance.editor) {
+
+        const isActive = instance.editor.isPreviewActive()
+
+        if (isActive != wantedState) {
+            instance.editor.togglePreview();
+        }
+    }
+}
+
 function destroy(element, elementId) {
     const instances = _instances || {};
+
+    // Fix for #54: Remove from DOM when MarkdownEditor is disposed
+    const instance = _instances[elementId];
+    if (instance && instance.editor) {
+        instance.editor.toTextArea();
+    }
+
     delete instances[elementId];
 }
 
