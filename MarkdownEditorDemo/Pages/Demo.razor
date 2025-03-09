@@ -1,17 +1,17 @@
 ﻿@page "/demo"
 
 <div class="col-md-12">
-    @if(isVisible)
+    @if (isVisible)
     {
         <MarkdownEditor @bind-Value="@markdownValue" MaxHeight="300px"
-        ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
-        SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
+                        ValueHTMLChanged="@OnMarkdownValueHTMLChanged" AllowResize="true"
+                        SpellChecker="false" @ref="Markdown1" AutoSaveEnabled="true" />
     }
 
     <button @onclick="ChangeText">Change text</button>
     <button @onclick="DeleteStorage">Delete Local Storage</button>
     <button @onclick="ToggleVisibility">Toggle Visibility</button>
-    
+
     <hr />
 
     <h3>Result</h3>
@@ -29,12 +29,12 @@
                            "Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, " +
                            "[links](https://www.puresourcecode.com) and all the other features. " +
                            "You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.\n\n" +
-                           "Please check [PureSourceCode.com](https://www.puresourcecode.com) for more updates.\n\n" + 
+                           "Please check [PureSourceCode.com](https://www.puresourcecode.com) for more updates.\n\n" +
                            "## Add code\nMarkdown Editor supports [highlight.js](https://highlightjs.org/) to colorize your code.\n\n" +
                            "```code\npublic async Task<string> GetValueAsync() {\n    return false;\n}\n```\n\n" +
-                           "## Add a mermaid graph\nFrom now on, the Markdown Editor can render mermaid graph. " + 
+                           "## Add a mermaid graph\nFrom now on, the Markdown Editor can render mermaid graph. " +
                            "See the [documentation](https://mermaid.js.org/intro/).\n\n" +
-                           "```mermaid\nstateDiagram\n    [*] --> Still\n    Still --> [*]\n\n    Still --> Moving\n    " + 
+                           "```mermaid\nstateDiagram\n    [*] --> Still\n    Still --> [*]\n\n    Still --> Moving\n    " +
                            "Moving --> Still\n    Moving --> Crash\n    Crash --> [*]\n```\n\n" +
                            "```att\nThis is an example of attention message\n```\n\n" +
                            "```note\nThis is a simple note message to add in the page\n```\n\n" +

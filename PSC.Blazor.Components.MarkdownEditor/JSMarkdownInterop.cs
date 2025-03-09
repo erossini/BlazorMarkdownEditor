@@ -11,6 +11,7 @@
         /// The js runtime
         /// </summary>
         private IJSRuntime jsRuntime;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JSMarkdownInterop"/> class.
         /// </summary>
@@ -101,11 +102,13 @@
         /// <param name="elementId">The element identifier.</param>
         /// <param name="options">The options.</param>
         /// <returns></returns>
-        public async ValueTask Initialize(DotNetObjectReference<MarkdownEditor> dotNetObjectRef, ElementReference elementRef,
+        public async ValueTask Initialize(DotNetObjectReference<MarkdownEditor> dotNetObjectRef,
+            ElementReference elementRef,
             string elementId, object options)
         {
             await jsRuntime.InvokeVoidAsync("initialize", dotNetObjectRef, elementRef, elementId, options);
         }
+
         /// <summary>
         /// Notifies the image upload error.
         /// </summary>

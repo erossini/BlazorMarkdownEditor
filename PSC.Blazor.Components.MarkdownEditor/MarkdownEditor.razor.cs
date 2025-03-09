@@ -22,6 +22,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         protected JSMarkdownInterop JSModule { get; private set; }
 
         #endregion Inject and JavaScript
+
         #region Element references
 
         /// <summary>
@@ -41,6 +42,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
         private ElementReference ElementRef { get; set; }
 
         #endregion Element references
+
         #region Local variable
 
         /// <summary>
@@ -70,7 +72,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
         /// <inheritdoc/>
         protected bool ShouldAutoGenerateId => true;
+
         #endregion Local variable
+
         #region AutoSave
 
         /// <summary>
@@ -178,7 +182,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </value>
         [Parameter]
         public string AutoSaveTimeFormatYear { get; set; } = "numeric";
+
         #endregion AutoSave
+
         #region Event Callback
 
         /// <summary>
@@ -198,7 +204,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </summary>
         [Parameter]
         public EventCallback<string> ValueHTMLChanged { get; set; }
+
         #endregion Event Callback
+
         #region Parameters
 
         /// <summary>
@@ -339,6 +347,16 @@ namespace PSC.Blazor.Components.MarkdownEditor
         [Parameter]
         public Func<FileStartedEventArgs, Task>? ImageUploadStarted { get; set; }
 
+        /// <summary>
+        /// Gets or sets the custom image upload.
+        /// </summary>
+        /// <remarks>
+        /// This defines a custom image upload handler. It passes the instance of the markdown editor 
+        /// So, the dev can still specify progress using MarkdownEditor.ImageUploadProgressed
+        /// </remarks>
+        /// <value>
+        /// The custom image upload.
+        /// </value>
         [Parameter]
         public Func<MarkdownEditor, FileEntry, Task<FileEntry>>? CustomImageUpload { get; set; }
 
@@ -404,6 +422,12 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public string Placeholder { get; set; }
 
         /// <summary>
+        /// Gets or sets a value controlling whether the preview should be enabled by default (default off).
+        /// </summary>
+        [Parameter]
+        public bool Preview { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the Segment Fetch Timeout when uploading the file.
         /// </summary>
         [Parameter]
@@ -424,12 +448,6 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </value>
         [Parameter]
         public bool SpellChecker { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets a value controlling whether the preview should be enabled by default (default off).
-        /// </summary>
-        [Parameter]
-        public bool Preview { get; set; } = false;
 
         /// <summary>
         /// If set, customize the tab size. Defaults to 2.
@@ -467,7 +485,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Gets or sets the markdown value.
         /// </summary>
         [Parameter]
-        public string Value {
+        public string Value
+        {
             get => _value;
             set
             {
@@ -477,6 +496,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 ValueChanged.InvokeAsync(value);
             }
         }
+
         private string _value;
 
         /// <summary>
@@ -691,7 +711,7 @@ namespace PSC.Blazor.Components.MarkdownEditor
             if (fileInfo is null || string.IsNullOrEmpty(fileInfo.ContentBase64))
                 await JSModule.NotifyImageUploadError(ElementId, $"Can't upload an empty file");
 
-            if(string.IsNullOrEmpty(ImageUploadEndpoint))
+            if (string.IsNullOrEmpty(ImageUploadEndpoint))
                 await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
 
             if (ImageUploadStarted is not null)
@@ -720,8 +740,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
             using (HttpClient httpClient = new HttpClient())
             {
-                if (!string.IsNullOrWhiteSpace(ImageUploadAuthenticationSchema) && !string.IsNullOrWhiteSpace(ImageUploadAuthenticationToken))
-                    httpClient.DefaultRequestHeaders.Authorization = 
+                if (!string.IsNullOrWhiteSpace(ImageUploadAuthenticationSchema) &&
+                    !string.IsNullOrWhiteSpace(ImageUploadAuthenticationToken))
+                    httpClient.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue(ImageUploadAuthenticationSchema, ImageUploadAuthenticationToken);
 
                 byte[] file = Convert.FromBase64String(fileInfo.ContentBase64);
@@ -867,7 +888,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
                         Lines = LinesStatusText,
                         Words = WordsStatusText,
                     },
-                    Toolbar = Toolbar != null && toolbarButtons?.Count > 0 ? MarkdownActionProvider.Serialize(toolbarButtons) : null,
+                    Toolbar = Toolbar != null && toolbarButtons?.Count > 0
+                        ? MarkdownActionProvider.Serialize(toolbarButtons)
+                        : null,
                     ToolbarTips,
                     UploadImage,
                     ImageMaxSize,
@@ -875,17 +898,19 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     ImageUploadEndpoint,
                     ImagePathAbsolute,
                     ImageCSRFToken,
-                    ImageTexts = ImageTexts == null ? null : new
-                    {
-                        SbInit = ImageTexts.Init,
-                        SbOnDragEnter = ImageTexts.OnDragEnter,
-                        SbOnDrop = ImageTexts.OnDrop,
-                        SbProgress = ImageTexts.Progress,
-                        SbOnUploaded = ImageTexts.OnUploaded,
-                        ImageTexts.SizeUnits,
-                    },
-                    ErrorMessages,
+                    ImageTexts = ImageTexts == null
+                        ? null
+                        : new
+                        {
+                            SbInit = ImageTexts.Init,
+                            SbOnDragEnter = ImageTexts.OnDragEnter,
+                            SbOnDrop = ImageTexts.OnDrop,
+                            SbProgress = ImageTexts.Progress,
+                            SbOnUploaded = ImageTexts.OnUploaded,
+                            ImageTexts.SizeUnits,
+                        },
                     Preview,
+                    ErrorMessages,
                 });
 
                 if (AllowResize != null && (bool)AllowResize)

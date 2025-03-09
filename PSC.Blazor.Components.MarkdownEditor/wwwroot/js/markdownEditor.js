@@ -153,9 +153,10 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                         return videoCode;
                     }
                     else if (lang && hljsInstalled) {
-                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return code; const language = hljs.getLanguage(lang) ? lang : 'plaintext';
                         return hljs.highlight(code, { language }).value;
                     }
+
                     return code;
                 }
             }
