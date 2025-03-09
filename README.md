@@ -187,7 +187,7 @@ So, I recommend to upgrade the script with the new one as I describe in the foll
 
 Using the new version of Mermaid from the 10.9.1 requires adding this code in the `index.html`, `host.html` or `App.razor`
 
-```
+```javascript
 <script type="module">
     import mermaid 
         from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
@@ -197,14 +197,11 @@ Using the new version of Mermaid from the 10.9.1 requires adding this code in th
 
 At the moment, I'm trying to find a way to include this script in the `markdownEditor.js` but I'm not sure it will work.
 
-### Examples of mermaid graphs
-
-```javascript
-
 ### An example of the mermaid graphs
+
 A **Sequence diagram** is an interaction diagram that shows how processes operate with one another and in what order.
 
-```
+```mermaid
 sequenceDiagram
     Alice->>John: Hello John, how are you?
     John-->>Alice: Great!
@@ -215,7 +212,7 @@ sequenceDiagram
 
 A **Gantt chart** is useful for tracking the amount of time it would take before a project is finished, but it can also be used to graphically represent "non-working days", with a few tweaks.
 
-```
+```mermaid
 gantt
     title A Gantt Diagram
     dateFormat  YYYY-MM-DD
@@ -231,7 +228,7 @@ gantt
 
 An **entity–relationship model** (or ER model) describes interrelated things of interest in a specific domain of knowledge. A basic ER model is composed of entity types (which classify the things of interest) and specifies relationships that can exist between entities (instances of those entity types).
 
-```
+```mermaid
 erDiagram
     CUSTOMER ||--o{ ORDER : places
     ORDER ||--|{ LINE-ITEM : contains
