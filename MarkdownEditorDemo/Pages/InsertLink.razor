@@ -1,0 +1,100 @@
+@page "/insertlink"
+
+<h3>Insert Link from a List of Pages</h3>
+
+<p>
+    Click the <em>link</em> icon in the custom toolbar below to open a picker with a
+    list of pages. Selecting one inserts a Markdown link at the cursor via
+    <code>InsertTextAsync</code>.
+</p>
+
+<div class="col-md-12">
+    <MarkdownEditor @bind-Value="@markdownValue"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    SpellChecker="false"
+                    @ref="editorRef"
+                    CustomButtonClicked="@OnCustomButtonClicked">
+        <Toolbar>
+            <MarkdownToolbarButton Action="MarkdownAction.Bold" Icon="fa fa-bold" Title="Bold" />
+            <MarkdownToolbarButton Action="MarkdownAction.Italic" Icon="fa fa-italic" Title="Italic" />
+            <MarkdownToolbarButton Separator Name="PickPageLink"
+                                   Icon="fa fa-link"
+                                   Title="Insert link from page list" />
+        </Toolbar>
+    </MarkdownEditor>
+
+    <hr />
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+</div>
+
+@if (showLinkPicker)
+{
+    <div class="modal-backdrop" style="position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1040;"
+         @onclick="() => showLinkPicker = false"></div>
+    <div class="card shadow"
+         style="position: fixed; top: 15%; left: 50%; transform: translateX(-50%);
+                z-index: 1050; width: min(480px, 92vw);">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Pick a page</strong>
+            <button type="button" class="btn-close" @onclick="() => showLinkPicker = false"></button>
+        </div>
+        <ul class="list-group list-group-flush" style="max-height: 50vh; overflow: auto;">
+            @foreach (var item in pages)
+            {
+                <li class="list-group-item list-group-item-action"
+                    style="cursor: pointer;"
+                    @onclick="() => InsertPageLink((item.Title, item.Slug))">
+                    <strong>@item.Title</strong>
+                    <div class="text-muted small">/docs/@item.Slug</div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+    MarkdownEditor editorRef;
+    bool showLinkPicker;
+
+    record PageInfo(string Title, string Slug);
+
+    readonly List<PageInfo> pages = new()
+    {
+        new("Getting started", "getting-started"),
+        new("Installation", "installation"),
+        new("Configuration", "configuration"),
+        new("Custom toolbar", "custom-toolbar"),
+        new("Image upload", "image-upload"),
+        new("Preview mode", "preview-mode"),
+        new("API reference", "api-reference")
+    };
+
+    string markdownValue = "# Insert link demo\n\nPlace the cursor where you want the link, " +
+                           "then click the link icon in the toolbar to pick a page.\n\n";
+    string markdownHtml;
+
+    Task OnCustomButtonClicked(MarkdownButtonEventArgs eventArgs)
+    {
+        if (eventArgs.Name == "PickPageLink")
+        {
+            showLinkPicker = true;
+            StateHasChanged();
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task InsertPageLink((string title, string slug) args)
+    {
+        showLinkPicker = false;
+        var markdown = $"[{args.title}](/docs/{args.slug})";
+        if (editorRef is not null)
+            await editorRef.InsertTextAsync(markdown);
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+}

@@ -1,4 +1,14 @@
-﻿.me-code.me-alert {
+﻿/* ===== Bootstrap Icons in EasyMDE toolbar ===== */
+.editor-toolbar button.bi::before {
+	font-family: "bootstrap-icons" !important;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 1rem;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.me-code.me-alert {
 	white-space: break-spaces;
 }
 

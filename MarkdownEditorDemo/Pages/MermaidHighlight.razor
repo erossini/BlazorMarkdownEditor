@@ -1,0 +1,116 @@
+@page "/mermaid-highlight"
+
+<h3>Mermaid &amp; highlight.js</h3>
+
+<p>
+    The component can lazy-load <a href="https://mermaid.js.org/" target="_blank">mermaid</a>
+    and <a href="https://highlightjs.org/" target="_blank">highlight.js</a> on demand.
+    Both libraries are bundled inside the NuGet package under
+    <code>wwwroot/lib/</code>, so they work <strong>offline</strong> — nothing is
+    fetched from a CDN at runtime.
+</p>
+
+<p>
+    Opt in with the <code>EnableMermaid</code> / <code>EnableHighlight</code>
+    parameters. Pick any theme from
+    <code>lib/highlight.js/styles/*.min.css</code> via <code>HighlightTheme</code>.
+    When neither flag is set, the scripts are not loaded at all.
+</p>
+
+<div class="mb-3 d-flex" style="gap: 1rem; align-items: center;">
+    <label>
+        <input type="checkbox" @bind="enableMermaid" /> EnableMermaid
+    </label>
+    <label>
+        <input type="checkbox" @bind="enableHighlight" /> EnableHighlight
+    </label>
+    <label>
+        HighlightTheme
+        <select class="form-select form-select-sm d-inline-block ms-1" style="width: auto;"
+                @bind="highlightTheme">
+            @foreach (var t in themes)
+            {
+                <option value="@t">@t</option>
+            }
+        </select>
+    </label>
+    <button class="btn btn-sm btn-primary" @onclick="() => editorKey++">Apply</button>
+</div>
+
+<div class="col-md-12">
+    <MarkdownEditor @key="editorKey"
+                    @bind-Value="@markdownValue"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    SpellChecker="false"
+                    EnableMermaid="@enableMermaid"
+                    EnableHighlight="@enableHighlight"
+                    HighlightTheme="@highlightTheme" />
+
+    <hr />
+    <h3>Preview</h3>
+    <div class="preview">
+        @((MarkupString)markdownHtml)
+    </div>
+</div>
+
+@code {
+    bool enableMermaid = true;
+    bool enableHighlight = true;
+    string highlightTheme = "github.min.css";
+    int editorKey;
+
+    readonly string[] themes = new[]
+    {
+        "github.min.css",
+        "github-dark.min.css",
+        "atom-one-dark.min.css",
+        "atom-one-light.min.css",
+        "monokai.min.css",
+        "nord.min.css",
+        "vs.min.css",
+        "vs2015.min.css"
+    };
+
+    string markdownValue = @"# Mermaid & highlight.js demo
+
+Fenced blocks tagged `mermaid` render as diagrams in the preview:
+
+```mermaid
+flowchart LR
+    A[Write Markdown] --> B{Preview?}
+    B -- yes --> C[Render Mermaid]
+    B -- no  --> D[Keep editing]
+```
+
+```mermaid
+sequenceDiagram
+    Alice->>Bob: Hello Bob
+    Bob-->>Alice: Hi Alice
+```
+
+Any other language tag is syntax-highlighted by highlight.js:
+
+```csharp
+public class Greeter
+{
+    public static void Main()
+    {
+        var name = ""world"";
+        Console.WriteLine($""Hello, {name}!"");
+    }
+}
+```
+
+```javascript
+const sum = (a, b) => a + b;
+console.log(sum(2, 3));
+```
+";
+    string markdownHtml;
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+}

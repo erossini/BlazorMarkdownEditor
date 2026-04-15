@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ApplicationIcon>psc_logo.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>psc_logo.png</PackageIcon>
@@ -17,6 +17,10 @@
     <PackageProjectUrl>https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/</PackageProjectUrl>
     <Copyright>Enrico Rossini - PureSourceCode.com</Copyright>
     <Title>Markdown Editor for Blazor</Title>
+    <PackageId>PSC.Blazor.Components.MarkdownEditor</PackageId>
+    <Version>1.0.0</Version>
+    <Product>PSC Blazor Components</Product>
+    <PackageLicenseExpression>LicenseRef-Commercial</PackageLicenseExpression>
   </PropertyGroup>
 
   
@@ -25,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.6" />
     <PackageReference Include="PSC.Blazor.Components.Common" Version="6.0.4" />
   </ItemGroup>
 
@@ -40,11 +44,20 @@
     </None>
   </ItemGroup>
 
+  <!--
+    Third-party libraries under wwwroot/lib are copied from their npm packages
+    and ship the full source tree (docs, tests, type definitions, ESM splits,
+    individual language parsers). Only the UMD bundles and the minified themes
+    are loaded at runtime by ensureAssets() in markdownEditor.js — everything
+    else is dead weight that would bloat the NuGet package and the consumer's
+    published static web assets. Remove it all, then re-include only what the
+    component actually serves.
+  -->
   <ItemGroup>
-    <Content Update="wwwroot\css\easymde.min.css">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <Content Remove="wwwroot\lib\highlight.js\es\**\*" />
+    <Content Remove="wwwroot\lib\highlight.js\languages\**\*" />
+    <Content Remove="wwwroot\lib\highlight.js\styles\*.css" />
+    <Content Include="wwwroot\lib\highlight.js\styles\*.min.css" />
   </ItemGroup>
 
 </Project>

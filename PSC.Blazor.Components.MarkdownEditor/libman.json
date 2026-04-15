@@ -1,0 +1,14 @@
+{
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "highlight.js@11.11.1",
+      "destination": "wwwroot/lib/highlight.js/"
+    },
+    {
+      "library": "mermaid@11.12.0",
+      "destination": "wwwroot/lib/mermaid/"
+    }
+  ]
+}

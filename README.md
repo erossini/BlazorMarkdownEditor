@@ -4,6 +4,12 @@ I decided to create my repository for the JavaScript library because I wanted to
 
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
 
+If you like this project and want to support my work, you can buy me a coffee or make a donation. Your support is really appreciated and it helps me to continue to create new projects and to maintain the existing ones.
+
+[![Donate](https://img.shields.io/badge/donate-Enrico%3A%20Support%20My%20Work%20%E2%9D%A4%EF%B8%8F-ec4899?style=flat-square&logo=github-sponsors&logoColor=white)](https://flnk.it/github-appreciation?src=github)
+
+Buy a licence to use the component in your commercial project and get support for any issue you may have. For more details, see the [licence page](https://flnk.it/shop/pscshop) hosted by [FastLinkIt (flnk.it)](https://flnk.it).
+
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
 
 [Try Markdown Editor online](http://markdown.puresourcecode.com/) (upload is not enabled)
@@ -131,6 +137,87 @@ For that, you have to add a `ref` to the `MarkdownEditor` and then use it to cal
     }
 }
 ```
+
+### Resize the editor
+
+EasyMDE exposes a native resize grip in the bottom-right corner of the composition
+area. The component surfaces this through the `Resize` parameter, combined with
+`MinHeight` / `MaxHeight` (EasyMDE uses `MaxHeight` as the initial height and lets
+the editor grow up to that value, then scrolls):
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                Resize="vertical"
+                MinHeight="150px"
+                MaxHeight="400px" />
+```
+
+Accepted values for `Resize` are `"none"` (default, no grip), `"vertical"`,
+`"horizontal"` and `"both"`. Because EasyMDE reads this option only when the
+editor is constructed, switch modes at runtime by forcing a fresh instance with
+`@key`:
+
+```
+<MarkdownEditor @key="resize"
+                @bind-Value="@markdownValue"
+                Resize="@resize"
+                MaxHeight="400px" />
+```
+
+See `Pages/Resize.razor` in the demo project for a full example with buttons that
+flip between the four modes.
+
+### Stack the fullscreen editor above overlays
+
+When the editor is used inside a Bootstrap modal (`z-index: 1040`) or any other
+overlay, the fullscreen view can be covered by the overlay. Use
+`FullScreenZIndex` to raise the fullscreen layer:
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                FullScreenZIndex="1050" />
+```
+
+### Insert a link from a list of pages
+
+A common documentation scenario is letting the user pick a target page from a
+predefined list and insert a Markdown link at the cursor. The component exposes
+`InsertTextAsync` for exactly this — combine it with a custom toolbar button that
+opens your own picker UI:
+
+```
+<MarkdownEditor @ref="editorRef"
+                @bind-Value="@markdownValue"
+                CustomButtonClicked="@OnCustomButtonClicked">
+    <Toolbar>
+        <MarkdownToolbarButton Name="PickPageLink"
+                               Icon="fa fa-link"
+                               Title="Insert link from page list" />
+    </Toolbar>
+</MarkdownEditor>
+
+@code {
+    MarkdownEditor editorRef;
+    bool showLinkPicker;
+
+    Task OnCustomButtonClicked(MarkdownButtonEventArgs e)
+    {
+        if (e.Name == "PickPageLink") showLinkPicker = true;
+        return Task.CompletedTask;
+    }
+
+    async Task InsertPageLink((string title, string slug) args)
+    {
+        showLinkPicker = false;
+        var markdown = $"[{args.title}](/docs/{args.slug})";
+        if (editorRef is not null)
+            await editorRef.InsertTextAsync(markdown);
+    }
+}
+```
+
+The demo project contains a complete working example at `Pages/InsertLink.razor`
+(modal with a scrollable list of pages).
 
 ## Add Mermaid render
 
@@ -337,6 +424,7 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | CustomImageUpload               | Sets a custom image upload handler                                                                                                                                                                                                                    |                                                                       |                                             |
 | Direction                       | rtl or ltr. Changes text direction to support right-to-left languages. Defaults to ltr.                                                                                                                                                               | string                                                                | ltr                                         |
 | ErrorMessages                   | Errors displayed to the user, using the errorCallback option, where _image_name_, _image_size_ and _image_max_size_ will be replaced by their respective values, that can be used for customization or internationalization.                          | MarkdownErrorMessages                                                 |                                             |
+| FullScreenZIndex                | Sets the `z-index` used by EasyMDE when entering fullscreen mode. Raise it above any overlay layers (for example Bootstrap modals at `1040`) so the fullscreen editor is not covered.                                                                | int?                                                                  | null (EasyMDE default)                      |
 | HideIcons                       | An array of icon names to hide. Can be used to hide specific icons shown by default without completely customizing the toolbar.                                                                                                                       | string[]                                                              | 'side-by-side', 'fullscreen'                |
 | ImageAccept                     | A comma-separated list of mime-types used to check image type before upload (note: never trust client, always check file types at server-side). Defaults to image/png, image/jpeg, image/jpg, image.gif.                                              | string                                                                | image/png, image/jpeg, image/jpg, image.gif |
 | ImageCSRFToken                  | CSRF token to include with AJAX call to upload image. For instance, used with Django backend.                                                                                                                                                         | string                                                                |                                             |
@@ -354,6 +442,7 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | MinHeight                       | Sets the minimum height for the composition area, before it starts auto-growing. Should be a string containing a valid CSS value like "500px". Defaults to "300px".                                                                                   | string                                                                | 300px                                       |
 | NativeSpellChecker              | Enable (true) or disable (false) the spell check in the editor                                                                                                                                                                                        | bool                                                                  | True                                        |
 | Placeholder                     | If set, displays a custom placeholder message.                                                                                                                                                                                                        | string                                                                | null                                        |
+| Resize                          | Controls the native EasyMDE resize handle on the editor. Accepted values: `"none"`, `"vertical"`, `"horizontal"`, `"both"`. Any value other than `"none"` enables resizing; EasyMDE uses `MaxHeight` as the initial height.                            | string                                                                | "none"                                      |
 | SegmentFetchTimeout             | Gets or sets the Segment Fetch Timeout when uploading the file.                                                                                                                                                                                       | TimeSpan                                                              | 1 min                                       |
 | ShowIcons                       | An array of icon names to show. Can be used to show specific icons hidden by default without completely customizing the toolbar.                                                                                                                      | string[]                                                              | 'code', 'table'                             |
 | SpellChecker                    | Enable (true) or disable (false) the spell check in the editor                                                                                                                                                                                        | bool                                                                  | True                                        |
@@ -506,4 +595,28 @@ The contribution gives you:
 
 ---
 
-[<img src="https://api.gitsponsors.com/api/badge/img?id=424906310" height="20">](https://api.gitsponsors.com/api/badge/link?p=PtrFLcw+fTVmFwdIWEGsWP5rHdSz1skPQCvo5xNJo3o+J+sRtHYDId1aoPXJyPLf)
+## 👋 About the author & more from me
+
+This library is built and maintained by **[Enrico Rossini](https://flnk.it/enrico)** — .NET architect, Blazor advocate, and indie maker.
+
+If this project helped you, here are a few more things from me you might like:
+
+### 📝 My blog — [PureSourceCode.com](https://www.puresourcecode.com)
+Deep-dives on Blazor, .NET, JavaScript frameworks, DevOps, and real-world engineering problems. 10+ years of articles, demos, and open-source components.
+
+### 🚀 [FastLinkIt (flnk.it)](https://flnk.it) — My SaaS platform
+A full-stack platform for link shortening, QR codes, link-in-bio pages, contact management, email campaigns, event booking, payments & donations, service requests, AI doc chat, and more. Free tier available, no credit card required.
+
+### 💼 Sell your code on FastLinkIt
+Got a library, NuGet package, template, or digital product? Sell it through **[flnk.it/features/sell-code](https://flnk.it/features/sell-code)** — private NuGet feed for buyers, one-command install, Stripe Connect payouts, licence keys, no monthly fees. You keep the money, I keep the platform running.
+
+### 🌍 [LanguageInUse.com](https://languageinuse.com) — Language learning, reinvented
+My other project: an app for learning languages through real-world usage patterns instead of textbooks. [Visit](https://languageinuse.com) and give it a try and search the apps in your app store.
+
+### 🤝 Support this work
+- ⭐ Star this repo on GitHub
+- 🐛 [Open an issue](../../issues) for bugs or feature requests
+- 💬 Follow me on [LinkedIn](https://www.linkedin.com/in/erossini/)
+- ☕ [Donate](https://flnk.it/github-appreciation?src=github) (optional)
+
+Thanks for using this project. 🙏

@@ -428,6 +428,49 @@ namespace PSC.Blazor.Components.MarkdownEditor
         public bool Preview { get; set; } = false;
 
         /// <summary>
+        /// If <c>true</c>, the component lazy-loads the bundled
+        /// <c>wwwroot/js/mermaid.min.js</c> before initializing EasyMDE so that
+        /// <c>```mermaid</c> fenced blocks render in the preview. Defaults to
+        /// <c>false</c> to keep the payload minimal.
+        /// </summary>
+        [Parameter]
+        public bool EnableMermaid { get; set; }
+
+        /// <summary>
+        /// If <c>true</c>, the component lazy-loads the bundled
+        /// <c>wwwroot/js/highlight.min.js</c> and a highlight.js theme stylesheet
+        /// (see <see cref="HighlightTheme"/>) so that fenced code blocks are
+        /// syntax-highlighted in the preview. Defaults to <c>false</c>.
+        /// </summary>
+        [Parameter]
+        public bool EnableHighlight { get; set; }
+
+        /// <summary>
+        /// File name of the highlight.js theme stylesheet inside
+        /// <c>wwwroot/css/</c> (relative to the component's static assets).
+        /// Used only when <see cref="EnableHighlight"/> is <c>true</c>.
+        /// Defaults to <c>"github.min.css"</c>.
+        /// </summary>
+        [Parameter]
+        public string HighlightTheme { get; set; } = "github.min.css";
+
+        /// <summary>
+        /// Sets the <c>z-index</c> used by EasyMDE when entering fullscreen mode.
+        /// Raise this above any overlay layers (for example Bootstrap modals at <c>1040</c>)
+        /// so the fullscreen editor is not covered. Defaults to <c>null</c> (EasyMDE default).
+        /// </summary>
+        [Parameter]
+        public int? FullScreenZIndex { get; set; }
+
+        /// <summary>
+        /// Controls the native EasyMDE resize handle. Accepted values: <c>"none"</c> (default),
+        /// <c>"vertical"</c>, <c>"horizontal"</c>, <c>"both"</c>. Any value other than <c>"none"</c>
+        /// enables resizing; EasyMDE uses <see cref="MaxHeight"/> as the initial height.
+        /// </summary>
+        [Parameter]
+        public string Resize { get; set; } = "none";
+
+        /// <summary>
         /// Gets or sets the Segment Fetch Timeout when uploading the file.
         /// </summary>
         [Parameter]
@@ -622,6 +665,18 @@ namespace PSC.Blazor.Components.MarkdownEditor
                 return;
 
             await JSModule.SetValue(ElementId, value);
+        }
+
+        /// <summary>
+        /// Inserts text at the current cursor position in the editor.
+        /// </summary>
+        /// <param name="text">The text to insert.</param>
+        public async Task InsertTextAsync(string text)
+        {
+            if (!Initialized || JSModule == null)
+                return;
+
+            await JSRuntime.InvokeVoidAsync("insertTextAtCursor", ElementId, text);
         }
 
         /// <summary>
@@ -844,6 +899,11 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
                 dotNetObjectRef ??= DotNetObjectReference.Create(this);
 
+                if (EnableMermaid || EnableHighlight)
+                {
+                    await JSModule.EnsureAssets(EnableMermaid, EnableHighlight, HighlightTheme);
+                }
+
                 await JSModule.Initialize(dotNetObjectRef, ElementRef, ElementId, new
                 {
                     AutoSave = new
@@ -875,6 +935,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     MarkdownUrl,
                     MinHeight,
                     MaxHeight,
+                    Resize,
+                    FullScreenZIndex,
                     Placeholder,
                     TabSize,
                     Theme,

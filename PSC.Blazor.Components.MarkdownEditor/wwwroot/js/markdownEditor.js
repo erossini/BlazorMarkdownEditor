@@ -33,7 +33,7 @@ function initialize(dotNetObjectRef, element, elementId, options) {
 
                 // button without icon is not allowed
                 if (!button.className) {
-                    button.className = "fa fa-question";
+                    button.className = "bi bi-question-circle";
                 }
             }
         });
@@ -51,8 +51,12 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     if (typeof hljs !== 'undefined')
         hljsInstalled = true;
 
+    // Resolve mermaid API — v11 may expose as mermaid.default
+    var _mermaidApi = null;
     if (typeof mermaid !== 'undefined') {
-        mermaidInstalled = true;
+        _mermaidApi = (typeof mermaid.render === 'function') ? mermaid :
+                      (mermaid.default && typeof mermaid.default.render === 'function') ? mermaid.default : null;
+        mermaidInstalled = (_mermaidApi !== null);
         if (options.toolbar == undefined) {
             options.toolbar = [
                 "bold", "italic", "heading", "|",
@@ -60,41 +64,12 @@ function initialize(dotNetObjectRef, element, elementId, options) {
                 {
                     name: "addMermaid",
                     action: renderMermaid,
-                    className: "fas fa-pie-chart",
+                    className: "bi bi-pie-chart",
                     title: "Add Mermaid",
                 },
                 "|",
-                {
-                    name: "addAttention",
-                    action: renderAttention,
-                    className: "fas fas fa-exclamation-circle",
-                    title: "Add Attention",
-                },
-                {
-                    name: "addNote",
-                    action: renderNote,
-                    className: "fas fa-info-circle",
-                    title: "Add Note",
-                },
-                {
-                    name: "addTip",
-                    action: renderTip,
-                    className: "fas fa-lightbulb",
-                    title: "Add Tip",
-                },
-                {
-                    name: "addWarning",
-                    action: renderWarning,
-                    className: "fas fa-exclamation-triangle",
-                    title: "Add Warning",
-                },
-                {
-                    name: "addVideo",
-                    action: renderVideo,
-                    className: "fa-solid fa-video",
-                    title: "Add video",
-                },
-                "|", "video", "|", "quote", "unordered-list", "ordered-list", "|", 
+                "attention", "note", "tip", "warning", "video",
+                "|", "quote", "unordered-list", "ordered-list", "|",
                 "link", "image", "table", "|", "fullscreen",
                 "preview", "|", "guide"
             ];
@@ -109,54 +84,39 @@ function initialize(dotNetObjectRef, element, elementId, options) {
             singleLineBreaks: false,
             codeSyntaxHighlighting: false,
             markedOptions: {
-                langPrefix: "",
+                // hljs themes target `.hljs` on the <code> element; the
+                // `language-xxx` suffix keeps marked's standard class too.
+                langPrefix: "hljs language-",
                 highlight: function (code, lang) {
-                    if (lang === "mermaid" && mermaidInstalled) {
-                        var tempDiv = document.createElement("div");
-                        tempDiv.className = "mermaid-container";
+                    if (lang === "mermaid" && typeof window.mermaid !== 'undefined') {
+                        var mApi = (typeof window.mermaid.render === 'function')
+                            ? window.mermaid
+                            : (window.mermaid.default && window.mermaid.default.render ? window.mermaid.default : null);
+                        if (!mApi) return code;
 
-                        var svg = mermaid.render("mermaid0", code);
-                        tempDiv.innerHTML = svg;
-                        return tempDiv;
+                        var mermaidId = 'mermaid-preview-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                        setTimeout(function () {
+                            var el = document.getElementById(mermaidId);
+                            if (el) {
+                                mApi.render(mermaidId + '-svg', code).then(function (result) {
+                                    el.innerHTML = result.svg || result;
+                                }).catch(function (e) {
+                                    el.innerHTML = '<small class="text-danger">Mermaid: ' + e.message + '</small>';
+                                });
+                            }
+                        }, 50);
+                        return '<div id="' + mermaidId + '" class="mermaid-container"><small class="text-muted">Rendering diagram...</small></div>';
                     }
-                    else if (lang === "att") {
-                        return '<div class="me-alert callout attention"><p class="title">' +
-                            '<span class="me-icon icon-attention"></span> Attention</p><p>' +
-                            code + '</p></div>';
+                    // att / note / tip / warn / video fenced blocks are rendered
+                    // natively by EasyMDE — no custom highlight branch needed.
+                    if (lang && typeof window.hljs !== 'undefined') {
+                        var language = window.hljs.getLanguage(lang) ? lang : 'plaintext';
+                        try {
+                            return window.hljs.highlight(code, { language: language, ignoreIllegals: true }).value;
+                        } catch (e) {
+                            return code;
+                        }
                     }
-                    else if (lang === "tip") {
-                        return '<div class="me-alert callout tip"><p class="title">' +
-                            '<span class="me-icon icon-tip"></span> Tip</p><p>' +
-                            code + '</p></div>';
-                    }
-                    else if (lang === "note") {
-                        return '<div class="me-alert callout note"><p class="title">' +
-                            '<span class="me-icon icon-note"></span> Note</p><p>' +
-                            code + '</p></div>';
-                    }
-                    else if (lang === "warn") {
-                        return '<div class="me-alert callout warning"><p class="title">' +
-                            '<span class="me-icon icon-warning"></span> Warning</p><p>' +
-                            code + '</p></div>';
-                    }
-                    else if (lang === "video") {
-                        var videoCode = '<div class="video-container">';
-
-                        if (code.includes("youtube.com") || code.includes("youtu.be"))
-                            videoCode = videoCode + '<iframe width="560" height="315" src="' + code + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-                        else if (code.includes("vimeo.com"))
-                            videoCode = videoCode + '<iframe src="' + code + '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
-                        else
-                            videoCode = videoCode + '<video controls><source src="' + code + '" type="video/mp4"></video>';
-
-                        videoCode = videoCode + '</div>';
-                        return videoCode;
-                    }
-                    else if (lang && hljsInstalled) {
-                        return code; const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                        return hljs.highlight(code, { language }).value;
-                    }
-
                     return code;
                 }
             }
@@ -168,6 +128,8 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         lineWrapping: options.lineWrapping,
         minHeight: options.minHeight,
         maxHeight: options.maxHeight,
+        resize: (options.resize && options.resize !== 'none') ? options.resize : false,
+        fullScreenZIndex: options.fullScreenZIndex,
         placeholder: options.placeholder,
         tabSize: options.tabSize,
         theme: options.theme,
@@ -199,69 +161,73 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         }
     });
 
+    // Ensure the EasyMDEContainer shows a native resize grip AND that the
+    // CodeMirror leaves room for the toolbar + statusbar inside the clipped
+    // container (otherwise the statusbar is pushed off until the first drag).
+    // Mirrors the logic in src/js/easymde.js for builds of easymde.min.js that
+    // predate that fix.
+    if (options.resize && options.resize !== 'none') {
+        setTimeout(function () {
+            var cm = easyMDE.codemirror;
+            var cmWrapper = cm.getWrapperElement();
+            var container = cmWrapper && cmWrapper.closest('.EasyMDEContainer');
+            if (!container) return;
+
+            var mode = options.resize;
+            var resizesWidth = mode === 'horizontal' || mode === 'both';
+
+            container.style.resize = mode;
+            container.style.overflow = 'hidden';
+            container.style.boxSizing = 'border-box';
+
+            if (options.maxHeight) {
+                container.style.height = options.maxHeight;
+                cm.getScrollerElement().style.height = '';
+            }
+            cmWrapper.style.height = 'auto';
+
+            var toolbar = container.querySelector('.editor-toolbar');
+            var statusbar = container.querySelector('.editor-statusbar');
+
+            var applyContainerSize = function () {
+                var containerW = container.offsetWidth;
+                var containerH = container.offsetHeight;
+                var editorH = containerH;
+                if (toolbar) editorH -= toolbar.offsetHeight;
+                if (statusbar) editorH -= statusbar.offsetHeight;
+                if (editorH < 0) editorH = 0;
+                cm.setSize(resizesWidth ? containerW : null, editorH);
+                return { w: containerW, h: containerH };
+            };
+
+            if (resizesWidth) {
+                container.style.width = container.offsetWidth + 'px';
+            }
+            var initial = applyContainerSize();
+
+            if (typeof ResizeObserver !== 'undefined') {
+                var lastW = initial.w, lastH = initial.h;
+                var ro = new ResizeObserver(function () {
+                    var w = container.offsetWidth, h = container.offsetHeight;
+                    if (w === lastW && h === lastH) return;
+                    lastW = w; lastH = h;
+                    applyContainerSize();
+                });
+                ro.observe(container);
+            }
+        }, 0);
+    }
+
     easyMDE.codemirror.on("change", function () {
         var text = easyMDE.value();
         dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
     });
 
-    function renderAttention(editor) {
-        var cm = editor.codemirror;
-        var output = '';
-        var selectedText = cm.getSelection();
-        var text = selectedText || '';
-
-        output = '```att\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
-    }
-
     function renderMermaid(editor) {
         var cm = editor.codemirror;
-        var output = '';
         var selectedText = cm.getSelection();
         var text = selectedText || '';
-
-        output = '```mermaid\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
-    }
-
-    function renderNote(editor) {
-        var cm = editor.codemirror;
-        var output = '';
-        var selectedText = cm.getSelection();
-        var text = selectedText || '';
-
-        output = '```note\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
-    }
-
-    function renderTip(editor) {
-        var cm = editor.codemirror;
-        var output = '';
-        var selectedText = cm.getSelection();
-        var text = selectedText || '';
-
-        output = '```tip\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
-    }
-
-    function renderWarning(editor) {
-        var cm = editor.codemirror;
-        var output = '';
-        var selectedText = cm.getSelection();
-        var text = selectedText || '';
-
-        output = '```warn\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
-    }
-
-    function renderVideo(editor) {
-        var cm = editor.codemirror;
-        var output = '';
-        var selectedText = cm.getSelection();
-        var text = selectedText || '';
-
-        output = '```video\r\n' + text + '\r\n```';
-        cm.replaceSelection(output);
+        cm.replaceSelection('```mermaid\r\n' + text + '\r\n```');
     }
 
     instances[elementId] = {
@@ -390,6 +356,17 @@ function notifyImageUploadError(elementId, errorMessage) {
     }
 }
 
+function insertTextAtCursor(elementId, text) {
+    const instance = _instances[elementId];
+    if (instance && instance.editor) {
+        var cm = instance.editor.codemirror;
+        var doc = cm.getDoc();
+        var cursor = doc.getCursor();
+        doc.replaceRange(text, cursor);
+        cm.focus();
+    }
+}
+
 function _arrayBufferToBase64(buffer) {
     var binary = '';
     var bytes = new Uint8Array(buffer);
@@ -418,63 +395,78 @@ async function NotifyUploadImage(elementId, file, dotNetObjectRef) {
         throw new Error(err);
     });
 
-    dotNetObjectRef.invokeMethodAsync('UploadFile', fileEntry).then(r => {
-        if (!r || r.length === 0)
-            notifyImageUploadError(elementId, "Upload error");
-        else
-            notifyImageUploadSuccess(elementId, r);
+    // UploadFile is a void C# method that handles success/error notifications
+    // via separate JS interop calls (notifyImageUploadSuccess/Error).
+    // Do NOT call notifyImageUploadSuccess here — the return value is not the URL.
+    dotNetObjectRef.invokeMethodAsync('UploadFile', fileEntry).then(null, function (err) {
+        notifyImageUploadError(elementId, err ? err.toString() : "Upload error");
     });
 }
 
 const meLoadCSS = function (name, url) {
-    if (document.getElementById(name))
-        return;
+    if (document.getElementById(name)) return Promise.resolve(true);
 
     return new Promise(function (resolve, reject) {
         const link = document.createElement('link');
-        link.rel = "stylesheet";
-        link.type = "text/css";
-        link.href = sourceUrl;
-
-        link.addEventListener('load', function () {
-            // The script is loaded completely
-            resolve(true);
-        });
-
-        document.head.appendChild(script);
+        link.id = name;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        link.addEventListener('load', function () { resolve(true); });
+        link.addEventListener('error', reject);
+        document.head.appendChild(link);
     });
 };
 
 const meLoadScript = function (name, url) {
-    if (document.getElementById(name))
-        return;
+    if (document.getElementById(name)) return Promise.resolve(true);
 
     return new Promise(function (resolve, reject) {
         const script = document.createElement('script');
-        script.src = url;
         script.id = name;
-
-        script.addEventListener('load', function () {
-            // The script is loaded completely
-            resolve(true);
-        });
-
+        script.src = url;
+        script.addEventListener('load', function () { resolve(true); });
+        script.addEventListener('error', reject);
         document.head.appendChild(script);
     });
 };
 
+// Loads mermaid / highlight.js bundled with the component on demand.
+// `assets` is { mermaid: bool, highlight: bool, highlightTheme: string|null }.
+async function ensureAssets(assets) {
+    if (!assets) return;
+    const base = '/_content/PSC.Blazor.Components.MarkdownEditor/lib';
+
+    if (assets.highlight && typeof window.hljs === 'undefined') {
+        const theme = assets.highlightTheme || 'github.min.css';
+        await meLoadCSS('me-hljs-css', base + '/highlight.js/styles/' + theme);
+        await meLoadScript('me-hljs-js', base + '/highlight.js/highlight.min.js');
+    }
+
+    if (assets.mermaid && typeof window.mermaid === 'undefined') {
+        await meLoadScript('me-mermaid-js',
+            '/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js');
+        if (window.mermaid && typeof window.mermaid.initialize === 'function') {
+            window.mermaid.initialize({ startOnLoad: false });
+        }
+    }
+}
+
 window.renderMermaidDiagram = async () => {
+    var m = (typeof mermaid !== 'undefined') ? mermaid : null;
+    if (m && typeof m.render !== 'function' && m.default) m = m.default;
+    if (!m || typeof m.render !== 'function') return;
+
     const collection = document.getElementsByTagName("code");
 
     for (let i = 0; i < collection.length; i++) {
         if (collection[i].classList.contains("mermaid")) {
             try {
-                console.log(collection[i].innerHTML);
-                var svg = await mermaid.render("theGraph", collection[i].innerHTML);
-                collection[i].innerHTML = svg;
+                var result = await m.render("theGraph-" + i, collection[i].innerHTML);
+                collection[i].innerHTML = result.svg || result;
             } catch (error) {
-                collection[i].innerHTML = "Invalid syntax. " + error; // Display error message
+                collection[i].innerHTML = "Invalid syntax. " + error;
             }
         }
     }
-} 
+}

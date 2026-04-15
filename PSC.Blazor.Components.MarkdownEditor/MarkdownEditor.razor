@@ -2,10 +2,9 @@
 @inject IJSRuntime JSRuntime
 
 <CascadingValue Value="@this" IsFixed="true">
-    <textarea @ref="@ElementRef" id="@ElementId" class="@CSSClass resizable">
-        @if (Toolbar != null)
-        {
-            @Toolbar
-        }
-    </textarea>
+    @if (Toolbar != null)
+    {
+        <div style="display:none">@Toolbar</div>
+    }
+    <textarea @ref="@ElementRef" id="@ElementId" class="@CSSClass resizable"></textarea>
 </CascadingValue>

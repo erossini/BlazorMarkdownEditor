@@ -1,3 +1,4 @@
-# These are supported funding model platforms
-
+# Sponsor button for github.com/erossini — links to your FastLinkIt campaign.
+# ?src=github tags donations so you can see which came from GitHub in /payments/earnings.
 github: erossini
+custom: ["https://flnk.it/github-appreciation?src=github"]

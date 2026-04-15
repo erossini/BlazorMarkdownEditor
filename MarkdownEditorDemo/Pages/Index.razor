@@ -3,9 +3,15 @@
 <h3>Markdown Editor for Blazor</h3>
 
 <p>
-    This is a Markdown Editor component for <a href="https://www.puresourcecode.com/tag/blazor-webassembly/" rel="nofollow">Blazor WebAssembly</a> and <a href="https://www.puresourcecode.com/tag/blazor-server/" rel="nofollow">Blazor Server</a> with .NET6.
+    This is a Markdown Editor component for <a href="https://www.puresourcecode.com/tag/blazor-webassembly/" rel="nofollow">Blazor WebAssembly</a> and <a href="https://www.puresourcecode.com/tag/blazor-server/" rel="nofollow">Blazor Server</a> with .NET10.
+    The component is also compatible with .NET6, .NET7, .NET8 and .NET9 but I suggest to use it with .NET10 to have the best experience and performance.
     The component is based on <a href="https://easy-markdown-editor.tk/" rel="nofollow">EasyMDE</a> to create the editor and <a href="https://github.com/xoofx/markdig">Markdig</a> for rendering the Markdown text in HTML.
     For more documentation and help this component, visit the post I created <a href="https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/" rel="nofollow">here</a>.
+</p>
+
+<p>
+    If you like this project and want to support my work, you can buy me a coffee or make a donation. Your support is really appreciated and it helps me to continue to create new projects and to maintain the existing ones.
+    Buy a licence to use the component in your commercial project and get support for any issue you may have. For more details, see the <a href="https://flnk.it/shop/pscshop" target="_blank">licence</a> hosted by <a href="https://flnk.it" target="_blank">FastLinkIt (flnk.it)</a>.
 </p>
 
 <p>
@@ -92,6 +98,45 @@ using PSC.Blazor.Components.MarkdownEditor.EventsArgs
 <p>
     If both libraries are loaded in the _index.html_, the mermaid render will not work.
 </p>
+
+<h2>Live demos</h2>
+
+<p>
+    The pages in the left-hand navigation showcase the main features exposed
+    by the component. The most recent additions are:
+</p>
+
+<ul>
+    <li>
+        <a href="/resize"><strong>Resize</strong></a> &mdash; use the
+        <code>Resize</code> parameter (<code>none</code> | <code>vertical</code> |
+        <code>horizontal</code> | <code>both</code>) together with
+        <code>MinHeight</code> / <code>MaxHeight</code> to show the native
+        EasyMDE resize grip. The page also demonstrates
+        <code>FullScreenZIndex</code>, which lets the fullscreen editor stack
+        above Bootstrap modals (<code>z-index: 1040</code>).
+    </li>
+    <li>
+        <a href="/insertlink"><strong>Insert link from a list of pages</strong></a>
+        &mdash; shows how to use a custom toolbar button together with
+        <code>InsertTextAsync</code> to open a modal with a list of pages and
+        insert the selected Markdown link at the cursor.
+    </li>
+    <li>
+        <a href="/customtoolbar"><strong>Custom toolbar</strong></a> &mdash;
+        mix built-in <code>MarkdownAction</code> buttons with custom buttons
+        and external links.
+    </li>
+    <li>
+        <a href="/preview"><strong>Preview</strong></a> &mdash; drive preview
+        mode from C# via <code>Preview</code>, <code>SetPreviewAsync</code> and
+        <code>TogglePreviewAsync</code>.
+    </li>
+    <li>
+        <a href="/upload"><strong>Upload</strong></a> &mdash; image upload
+        pipeline (drag-drop / paste / file browser) wired to the sample API.
+    </li>
+</ul>
 
 <h2>Shortcuts</h2>
 

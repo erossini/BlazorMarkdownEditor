@@ -1,0 +1,91 @@
+@page "/resize"
+
+<h3>Resize, height limits and fullscreen z-index</h3>
+
+<p>
+    This page demonstrates three EasyMDE options now exposed on the component:
+    <code>Resize</code> (<code>none</code> | <code>vertical</code> | <code>horizontal</code> | <code>both</code>),
+    <code>MinHeight</code> / <code>MaxHeight</code> (the editor starts at <code>MinHeight</code> and grows
+    up to <code>MaxHeight</code>, then scrolls), and <code>FullScreenZIndex</code> (stacks the fullscreen
+    editor above overlays such as Bootstrap modals at <code>1040</code>).
+</p>
+
+<div class="col-md-12 mb-3">
+    <div class="btn-group" role="group">
+        @foreach (var mode in new[] { "none", "vertical", "horizontal", "both" })
+        {
+            <button type="button"
+                    class="btn @(resize == mode ? "btn-primary" : "btn-outline-primary")"
+                    @onclick="() => SetResize(mode)">
+                @mode
+            </button>
+        }
+    </div>
+    <span class="ms-3 text-muted">Current: <code>Resize="@resize"</code></span>
+</div>
+
+<div class="col-md-12 mb-3 row g-2 align-items-end">
+    <div class="col-auto">
+        <label class="form-label mb-0">MinHeight</label>
+        <input class="form-control" style="width: 120px;" @bind="minHeight" />
+    </div>
+    <div class="col-auto">
+        <label class="form-label mb-0">MaxHeight</label>
+        <input class="form-control" style="width: 120px;" @bind="maxHeight" />
+    </div>
+    <div class="col-auto">
+        <label class="form-label mb-0">FullScreenZIndex</label>
+        <input type="number" class="form-control" style="width: 120px;" @bind="fullScreenZIndex" />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="Apply">Apply</button>
+    </div>
+</div>
+
+<div class="col-md-12">
+    @* Re-create the editor when the mode changes so EasyMDE picks up the new option *@
+    @if (!string.IsNullOrEmpty(resize))
+    {
+        <MarkdownEditor @key="editorKey"
+                        @bind-Value="@markdownValue"
+                        ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                        SpellChecker="false"
+                        Resize="@resize"
+                        MinHeight="@minHeight"
+                        MaxHeight="@maxHeight"
+                        FullScreenZIndex="@fullScreenZIndex" />
+    }
+
+    <hr />
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+</div>
+
+@code {
+    string resize = "vertical";
+    string minHeight = "150px";
+    string maxHeight = "400px";
+    int fullScreenZIndex = 1050;
+    int editorKey;
+
+    string markdownValue = "# Resize demo\n\nDrag the grip in the bottom-right corner of the editor " +
+                           "to resize it. Switch between `none`, `vertical`, `horizontal` and `both` " +
+                           "using the buttons above.\n\n" +
+                           "Try fullscreen (F11 icon) — with `FullScreenZIndex=1050`, the editor stacks " +
+                           "above Bootstrap modals (`z-index: 1040`).\n";
+    string markdownHtml;
+
+    void SetResize(string mode)
+    {
+        resize = mode;
+        editorKey++;
+    }
+
+    void Apply() => editorKey++;
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+}

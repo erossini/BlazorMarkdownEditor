@@ -55,6 +55,17 @@
         }
 
         /// <summary>
+        /// Loads the optional mermaid / highlight.js assets bundled with the
+        /// component, only when the caller has opted in. Safe to call multiple
+        /// times — already-loaded scripts/styles are skipped.
+        /// </summary>
+        public async ValueTask EnsureAssets(bool mermaid, bool highlight, string? highlightTheme)
+        {
+            await jsRuntime.InvokeVoidAsync("ensureAssets",
+                new { mermaid, highlight, highlightTheme });
+        }
+
+        /// <summary>
         /// Deletes the automatic save entry in the local storage.
         /// </summary>
         /// <returns>ValueTask.</returns>
