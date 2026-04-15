@@ -1,5 +1,5 @@
 # Blazor Markdown Editor
-This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET8. The component is based on [EasyMDE](https://github.com/erossini/EasyMarkdownEditor) version _1.0.x_ to create the editor. 
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET8. The component is based on [EasyMDE](https://github.com/erossini/EasyMarkdownEditor) version _2.0.x_ to create the editor. 
 I decided to create my repository for the JavaScript library because I wanted to have control over the updates and the changes. The component is a wrapper around the JavaScript library and it is a Blazor component that allows you to use the Markdown Editor in your Blazor application.
 
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
