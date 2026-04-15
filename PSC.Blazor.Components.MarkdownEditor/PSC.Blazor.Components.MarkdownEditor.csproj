@@ -53,6 +53,17 @@
     published static web assets. Remove it all, then re-include only what the
     component actually serves.
   -->
+  <!--
+    libman.json is a build-time tool config (LibraryManager). It is not a
+    runtime asset, so exclude it from the static web assets pipeline; otherwise
+    it ends up at the package root and collides with the consumer's own
+    libman.json on publish.
+  -->
+  <ItemGroup>
+    <Content Remove="libman.json" />
+    <None Include="libman.json" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Remove="wwwroot\lib\highlight.js\es\**\*" />
     <Content Remove="wwwroot\lib\highlight.js\languages\**\*" />

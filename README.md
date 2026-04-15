@@ -219,70 +219,84 @@ opens your own picker UI:
 The demo project contains a complete working example at `Pages/InsertLink.razor`
 (modal with a scrollable list of pages).
 
-## Add Mermaid render
+## Mermaid and highlight.js (offline, on demand)
 
-In order to add more functionaties to the component, it includes the version of [mermaid.js](https://mermaid.js.org/) 10.2.1 that allows to add impressive diagrams and chart in the Markdown component like
-- Flowchart
-- Sequence Diagram
-- Class Diagram
-- State Diagram
-- Entity Relationship Diagram
-- User Journey
-- Gantt
-- Pie Chart
-- Quadrant Chart
-- Requirement Diagram
-- Gitgraph (Git) Diagram
-- C4C Diagram (Context) Diagram
-- Mindmaps
-- Timeline
+The component ships [mermaid](https://mermaid.js.org/) and
+[highlight.js](https://highlightjs.org/) inside its NuGet package and loads them
+**only when the consumer asks for them** — nothing is fetched from a CDN at
+runtime. There is no need to add `<script>` tags to your `index.html` /
+`host.html` / `App.razor` anymore.
 
-To add this functionality to the Markdown Editor, it is enough to add in the `index.html` this script
-
-```javascript
-<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/mermaid.min.js"></script>
-```
-
-The script will check if this library is called. If it is added to the page, the Markdown Editor automatically will add a button in the toolbar to insert the tag for mermaid. That tag is
+Opt in with the `EnableMermaid` / `EnableHighlight` parameters and pick a
+highlight.js theme by file name (any `*.min.css` from
+`wwwroot/lib/highlight.js/styles/` works):
 
 ```
-    ```mermaid
-    ```
+<MarkdownEditor @bind-Value="@markdownValue"
+                EnableMermaid="true"
+                EnableHighlight="true"
+                HighlightTheme="github.min.css" />
 ```
 
-### Warning
+When neither flag is set the scripts are not downloaded at all, so the editor
+stays as light as possible. When multiple editors on the same page enable the
+same asset, it is loaded once and shared.
 
-Using this script in the component 
+### Mermaid
 
+Mermaid renders diagrams from fenced code blocks tagged `mermaid`:
+
+````
+```mermaid
+flowchart LR
+    A[Write Markdown] --> B{Preview?}
+    B -- yes --> C[Render Mermaid]
+    B -- no  --> D[Keep editing]
 ```
-<script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
+````
+
+Supported diagram types include Flowchart, Sequence, Class, State, Entity
+Relationship, User Journey, Gantt, Pie Chart, Quadrant, Requirement, Git graph,
+C4 Context, Mindmaps and Timeline.
+
+When `EnableMermaid` is `true`, a "mermaid" toolbar button is added so users can
+insert the fenced block with one click.
+
+### highlight.js
+
+Set `EnableHighlight="true"` and any fenced block with a known language tag is
+syntax-highlighted in the preview:
+
+````
+```csharp
+public class Greeter
+{
+    public static void Main() => Console.WriteLine("Hello, world!");
+}
 ```
+````
 
-or the cdn
+Pick a colour theme via `HighlightTheme`. Common choices: `github.min.css`,
+`github-dark.min.css`, `atom-one-dark.min.css`, `monokai.min.css`,
+`nord.min.css`, `vs2015.min.css`. The full list of available themes is whatever
+ships under `wwwroot/lib/highlight.js/styles/*.min.css`.
 
-```
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-```
+The bundled `highlight.min.js` ships the common-language pack (~35 languages).
+If you need an exotic language not in that pack, you can drop the additional
+parser file under `wwwroot/lib/highlight.js/languages/` in your host project
+and load it with a regular `<script>` tag in `index.html` — `highlight.js`
+automatically picks it up.
 
-the mermaid render will not work. The error is 
+### Combining mermaid and highlight.js
 
-> e.replace is not a function
+Both libraries can be enabled on the same editor with no extra setup. The
+component rewires EasyMDE's preview renderer to (a) leave `mermaid` blocks for
+the mermaid runtime and (b) feed every other fenced block to highlight.js, so
+the previous "loading both libraries breaks mermaid" caveat from earlier
+versions no longer applies.
 
-So, I recommend to upgrade the script with the new one as I describe in the following paragraph.
-
-#### Upgrade to version 10.9.1 or above
-
-Using the new version of Mermaid from the 10.9.1 requires adding this code in the `index.html`, `host.html` or `App.razor`
-
-```javascript
-<script type="module">
-    import mermaid 
-        from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ startOnLoad: true });
-</script>
-```
-
-At the moment, I'm trying to find a way to include this script in the `markdownEditor.js` but I'm not sure it will work.
+See the demo project: **`/mermaid-highlight`** in `Pages/MermaidHighlight.razor`
+shows both features together with a theme picker.
 
 ### An example of the mermaid graphs
 
@@ -325,20 +339,10 @@ erDiagram
 ![entity–relationship model](https://github.com/erossini/BlazorMarkdownEditor/assets/9497415/1834c522-57db-41a7-a8ae-65f4438e1bff)
 
 
-## Add Highlight.js
-
-This script is not included in the component but the component can detect if _Highlight.js_ is loaded. In this case, the Markdown Editor renders also the code in one of the supported languages.
-
-To enable this function, add the script in your project and then in the `index.html` add the following lines
-
-```
-<link rel="stylesheet" href="/path/to/styles/default.min.css">
-<script src="/path/to/highlight.min.js"></script>
-```
-
-### Known issue using mermaid and Highlight.js
-
-If both libraries are loaded in the _index.html_, the mermaid render will not work. 
+> See **Mermaid and highlight.js (offline, on demand)** above for the supported
+> way to enable syntax highlighting via the `EnableHighlight` and
+> `HighlightTheme` parameters. The component bundles highlight.js, so no
+> external `<script>` is required. 
 
 ## Alerts
 
@@ -421,7 +425,10 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | CustomImageUpload               | Sets a custom image upload handler                                                                                                                                                                                                                    |                                                                       |                                             |
 | Direction                       | rtl or ltr. Changes text direction to support right-to-left languages. Defaults to ltr.                                                                                                                                                               | string                                                                | ltr                                         |
 | ErrorMessages                   | Errors displayed to the user, using the errorCallback option, where _image_name_, _image_size_ and _image_max_size_ will be replaced by their respective values, that can be used for customization or internationalization.                          | MarkdownErrorMessages                                                 |                                             |
+| EnableHighlight                 | If `true`, lazy-loads the bundled `highlight.min.js` (and the theme selected by `HighlightTheme`) before initializing EasyMDE so fenced code blocks are syntax-highlighted in the preview. Defaults to `false`.                                       | bool                                                                  | false                                       |
+| EnableMermaid                   | If `true`, lazy-loads the bundled `mermaid.min.js` before initializing EasyMDE so ```` ```mermaid ```` fenced blocks render as diagrams in the preview. Defaults to `false`.                                                                          | bool                                                                  | false                                       |
 | FullScreenZIndex                | Sets the `z-index` used by EasyMDE when entering fullscreen mode. Raise it above any overlay layers (for example Bootstrap modals at `1040`) so the fullscreen editor is not covered.                                                                | int?                                                                  | null (EasyMDE default)                      |
+| HighlightTheme                  | File name of the highlight.js theme stylesheet inside `wwwroot/lib/highlight.js/styles/` (relative to the component's static assets). Used only when `EnableHighlight` is `true`.                                                                    | string                                                                | "github.min.css"                            |
 | HideIcons                       | An array of icon names to hide. Can be used to hide specific icons shown by default without completely customizing the toolbar.                                                                                                                       | string[]                                                              | 'side-by-side', 'fullscreen'                |
 | ImageAccept                     | A comma-separated list of mime-types used to check image type before upload (note: never trust client, always check file types at server-side). Defaults to image/png, image/jpeg, image/jpg, image.gif.                                              | string                                                                | image/png, image/jpeg, image/jpg, image.gif |
 | ImageCSRFToken                  | CSRF token to include with AJAX call to upload image. For instance, used with Django backend.                                                                                                                                                         | string                                                                |                                             |
@@ -463,6 +470,19 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | ImageUploadStarted    | Occurs when an individual image upload has started.                                                                                                       | Func<FileStartedEventArgs, Task>    |
 | ValueChanged          | An event that occurs after the markdown value has changed.                                                                                                | EventCallback<string>               |
 | ValueHTMLChanged      | An event that occurs after the markdown value has changed and the new HTML code is available.                                                             | EventCallback<string>               |
+
+### Methods
+Call these via an `@ref` to the `MarkdownEditor` instance.
+
+| Name                  | Description                                                                                                                                                                       | Signature                              |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
+| GetValueAsync         | Reads the current Markdown text from the editor (useful when bypassing two-way binding).                                                                                          | `Task<string> GetValueAsync()`         |
+| SetValueAsync         | Replaces the editor content with the provided Markdown.                                                                                                                            | `Task SetValueAsync(string value)`     |
+| InsertTextAsync       | Inserts the provided text at the current cursor position. Used to build features such as "insert link from a list of pages" — see `Pages/InsertLink.razor` in the demo project.   | `Task InsertTextAsync(string text)`    |
+| TogglePreviewAsync    | Toggles preview mode on/off.                                                                                                                                                       | `Task TogglePreviewAsync()`            |
+| SetPreviewAsync       | Forces preview mode to the requested state.                                                                                                                                        | `Task SetPreviewAsync(bool wanted)`    |
+| CleanAutoSave         | Removes the current editor's autosave entry from `localStorage`.                                                                                                                   | `Task CleanAutoSave()`                 |
+| CleanAllAutoSave      | Removes every autosave entry created by the component from `localStorage`.                                                                                                         | `Task CleanAllAutoSave()`              |
 
 ## Upload file
 The Markdown Editor for Blazor can take care of uploading a file and add the relative Markdown code in the editor. For that, the property `UploadImage` has to set to `true`. Also, the upload API must be specified in the property `ImageUploadEndpoint`.
