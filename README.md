@@ -6,10 +6,6 @@ For more documentation and help this component, visit the post I created [here](
 
 If you like this project and want to support my work, you can buy me a coffee or make a donation. Your support is really appreciated and it helps me to continue to create new projects and to maintain the existing ones.
 
-[![Donate](https://img.shields.io/badge/donate-Enrico%3A%20Support%20My%20Work%20%E2%9D%A4%EF%B8%8F-ec4899?style=flat-square&logo=github-sponsors&logoColor=white)](https://flnk.it/github-appreciation?src=github)
-
-Buy a licence to use the component in your commercial project and get support for any issue you may have. For more details, see the [licence page](https://flnk.it/shop/pscshop) hosted by [FastLinkIt (flnk.it)](https://flnk.it).
-
 ![markdown-editor-blazor-logo](https://user-images.githubusercontent.com/9497415/149015375-005eded7-4b4e-4644-b08b-8db24511f0db.jpg)
 
 [Try Markdown Editor online](http://markdown.puresourcecode.com/) (upload is not enabled)
