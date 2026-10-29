@@ -1,5 +1,5 @@
 # Blazor Markdown Editor
-This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET8. The component is based on [EasyMDE](https://github.com/erossini/EasyMarkdownEditor) version _2.0.x_ to create the editor. 
+This is a Markdown Editor component for [Blazor WebAssembly](https://www.puresourcecode.com/tag/blazor-webassembly/) and [Blazor Server](https://www.puresourcecode.com/tag/blazor-server/) with .NET 10. The component is based on [EasyMDE](https://github.com/erossini/EasyMarkdownEditor) version _1.0.x_ to create the editor. 
 I decided to create my repository for the JavaScript library because I wanted to have control over the updates and the changes. The component is a wrapper around the JavaScript library and it is a Blazor component that allows you to use the Markdown Editor in your Blazor application.
 
 For more documentation and help this component, visit the post I created [here](https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/).
@@ -16,6 +16,7 @@ Add the Editor to your ```_Imports.razor```
 
 ```
 @using PSC.Blazor.Components.MarkdownEditor 
+@using PSC.Blazor.Components.MarkdownEditor.Enums
 @using PSC.Blazor.Components.MarkdownEditor.EventsArgs
 ```
 
@@ -29,7 +30,9 @@ Then, in your `index.html`, `host.html` or `App.razor` add those lines:
 <script src="/_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
 ```
 
-Remember that `jQuery` is also required. The component contains the [Easy Markdown Editor](https://github.com/erossini/EasyMarkdownEditor) script version 1.0.x that is also maintain by myself. 
+**jQuery is no longer needed.** If you are upgrading, you can remove its `<script>` tag, unless your own pages use it.
+
+The component contains the [Easy Markdown Editor](https://github.com/erossini/EasyMarkdownEditor) script version 1.0.x that is also maintain by myself. 
 You can add this script in your project but if you use the script in the component, you are sure it works fine and all functionalities are tested.
 
 The CSS `markdowneditor.css` contains the style for same of the new tags I added in the Markdown Editor such as `att`, `note`, `tip`, `warn` and `video`.
@@ -111,6 +114,26 @@ In the tag `MarkdownEditor`, you add the new tab `Toolbar` that contains one or 
 Each `MarkdownToolbarButton` can have one of the default `Action` (see table below) or a custom value for example a link to a website. 
 If you want to display before a `MarkdownToolbarButton` a vertical line, add the property `Separator` in the `MarkdownToolbarButton`.
 
+### Customise the Markdown Guide URL
+
+The toolbar's `?` Help button opens the [Markdown Guide](https://www.markdownguide.org/basic-syntax/) by default. If you want it to open your own Markdown reference (a docs page in your product, an internal wiki page, a custom cheat sheet) set `MarkdownUrl` on the editor:
+
+```html
+<MarkdownEditor @bind-Value="markdown"
+                MarkdownUrl="https://your-host.example/docs/markdown-syntax" />
+```
+
+The value is per-instance, so different editors on the same page can each point at a different reference. The component forwards the URL to EasyMDE's native `markdownUrl` constructor option — equivalent to writing this directly in JavaScript:
+
+```js
+new EasyMDE({
+    element: document.getElementById('editor'),
+    markdownUrl: 'https://your-host.example/docs/markdown-syntax',
+});
+```
+
+When `MarkdownUrl` is null or empty the default upstream URL is used.
+
 ### Change the content after the first init
 
 In same cases, you want to refresh the content of the Markdown Editor after the first init, for example because your application has to read the value from an API and it takes time.
@@ -173,6 +196,34 @@ overlay, the fullscreen view can be covered by the overlay. Use
 <MarkdownEditor @bind-Value="@markdownValue"
                 FullScreenZIndex="1050" />
 ```
+
+### Check spelling
+
+The editor can let the browser's own spell checker underline misspelt words and offer corrections on right-click. It uses the languages set in the browser and the operating system (British English, Italian, and so on), works offline, and sends nothing anywhere unless the user has turned on the browser's enhanced, online spell check.
+
+The browser can check only text that is itself editable. EasyMDE makes it so by itself only on a phone or a tablet, so on a computer ask for it with `InputStyle`:
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                SpellChecker="false"
+                NativeSpellChecker="true"
+                InputStyle="MarkdownInputStyle.ContentEditable" />
+```
+
+- `NativeSpellChecker` turns the browser's checker on or off (on by default).
+- `InputStyle` is `Automatic` (the default: `ContentEditable` on a phone, `Textarea` elsewhere), `Textarea` or `ContentEditable`. It is read when the editor starts.
+- `SpellChecker` is EasyMDE's own checker: US English only, with its dictionary downloaded from a CDN each time. Turn it off when you use the browser's, or both underline the same words.
+
+### Single line breaks
+
+By default, as in standard Markdown, lines with no blank line between them run on into one paragraph in the preview. Set `SingleLineBreaks` to make each line break a `<br>`, as GitHub renders comments:
+
+```
+<MarkdownEditor @bind-Value="@markdownValue"
+                SingleLineBreaks="true" />
+```
+
+It applies to the preview and to the HTML given to `ValueHTMLChanged`. There is no need to patch `window.EasyMDE` for it any more.
 
 ### Insert a link from a list of pages
 
@@ -426,8 +477,9 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | FullScreenZIndex                | Sets the `z-index` used by EasyMDE when entering fullscreen mode. Raise it above any overlay layers (for example Bootstrap modals at `1040`) so the fullscreen editor is not covered.                                                                | int?                                                                  | null (EasyMDE default)                      |
 | HighlightTheme                  | File name of the highlight.js theme stylesheet inside `wwwroot/lib/highlight.js/styles/` (relative to the component's static assets). Used only when `EnableHighlight` is `true`.                                                                    | string                                                                | "github.min.css"                            |
 | HideIcons                       | An array of icon names to hide. Can be used to hide specific icons shown by default without completely customizing the toolbar.                                                                                                                       | string[]                                                              | 'side-by-side', 'fullscreen'                |
-| ImageAccept                     | A comma-separated list of mime-types used to check image type before upload (note: never trust client, always check file types at server-side). Defaults to image/png, image/jpeg, image/jpg, image.gif.                                              | string                                                                | image/png, image/jpeg, image/jpg, image.gif |
+| ImageAccept                     | A comma-separated list of mime-types used to check image type before upload (note: never trust client, always check file types at server-side). Defaults to image/png, image/jpeg, image/jpg, image/gif, image/webp.                                  | string                                                                | image/png, image/jpeg, image/jpg, image/gif, image/webp |
 | ImageCSRFToken                  | CSRF token to include with AJAX call to upload image. For instance, used with Django backend.                                                                                                                                                         | string                                                                |                                             |
+| InputStyle                      | How the editor takes typing: `Automatic` (EasyMDE chooses: `ContentEditable` on a phone, `Textarea` elsewhere), `Textarea` or `ContentEditable`. The browser's spell checker (`NativeSpellChecker`) underlines words only with `ContentEditable`.     | MarkdownInputStyle                                                    | Automatic                                   |
 | ImageMaxSize                    | Maximum image size in bytes, checked before upload (note: never trust client, always check image size at server-side). Defaults to 1024 * 1024 * 2 (2Mb).                                                                                             | long                                                                  | 1024 * 1024 * 2 (2Mb)                       |
 | ImagePathAbsolute               | If set to true, will treat _imageUrl_ from _imageUploadFunction_ and _filePath_ returned from _imageUploadEndpoint_ as an absolute rather than relative path, i.e. not prepend window.location.origin to it.                                          | string                                                                |                                             |
 | ImageTexts                      | Texts displayed to the user (mainly on the status bar) for the import image feature, where _image_name_, _image_size_ and _image_max_size_ will be replaced by their respective values, that can be used for customization or internationalization.   | MarkdownImageTexts                                                    | null                                        |
@@ -436,16 +488,17 @@ The Markdown Editor for Blazor has a estensive collection of properties to map a
 | LineNumbers                     | If set to true, enables line numbers in the editor.                                                                                                                                                                                                   | bool                                                                  | false                                       |
 | LinesStatusText                 | Set the words to display in the statusbar for the line's counting                                                                                                                                                                                     | string                                                                | `lines: `                                   |
 | LineWrapping                    | If set to false, disable line wrapping. Defaults to true.                                                                                                                                                                                             | bool                                                                  | false                                       |
-| MarkdownUrl                     | Set the URL for the Markdown guide.                                                                                                                                                                                                                   | [Link to Markdown Guide](https://www.markdownguide.org/basic-syntax/) |                                             |
+| MarkdownUrl                     | Override the URL the toolbar's `?` Help button opens. Forwarded to EasyMDE's native `markdownUrl` constructor option. When unset, opens the default Markdown Guide. See [Customise the Markdown Guide URL](#customise-the-markdown-guide-url) for an example. | string                                                                | `https://www.markdownguide.org/basic-syntax/` |
 | MaxHeight                       | Sets fixed height for the composition area. minHeight option will be ignored. Should be a string containing a valid CSS value like "500px". Defaults to undefined.                                                                                    | string                                                                |                                             |
 | MaxUploadImageMessageSize       | Gets or sets the max message size when uploading the file.                                                                                                                                                                                            | long                                                                  | 20 * 1024                                   |
 | MinHeight                       | Sets the minimum height for the composition area, before it starts auto-growing. Should be a string containing a valid CSS value like "500px". Defaults to "300px".                                                                                   | string                                                                | 300px                                       |
-| NativeSpellChecker              | Enable (true) or disable (false) the spell check in the editor                                                                                                                                                                                        | bool                                                                  | True                                        |
+| NativeSpellChecker              | Enable (true) or disable (false) the browser's own spell checker, in the browser's languages. It underlines words only when `InputStyle` is `ContentEditable` (on a computer) or on a phone.                                                          | bool                                                                  | True                                        |
 | Placeholder                     | If set, displays a custom placeholder message.                                                                                                                                                                                                        | string                                                                | null                                        |
 | Resize                          | Controls the native EasyMDE resize handle on the editor. Accepted values: `"none"`, `"vertical"`, `"horizontal"`, `"both"`. Any value other than `"none"` enables resizing; EasyMDE uses `MaxHeight` as the initial height.                            | string                                                                | "none"                                      |
 | SegmentFetchTimeout             | Gets or sets the Segment Fetch Timeout when uploading the file.                                                                                                                                                                                       | TimeSpan                                                              | 1 min                                       |
 | ShowIcons                       | An array of icon names to show. Can be used to show specific icons hidden by default without completely customizing the toolbar.                                                                                                                      | string[]                                                              | 'code', 'table'                             |
-| SpellChecker                    | Enable (true) or disable (false) the spell check in the editor                                                                                                                                                                                        | bool                                                                  | True                                        |
+| SingleLineBreaks                | If set to true, a single line break in the text is a line break in the preview and in the HTML (as GitHub comments render). Defaults to false: lines run on into one paragraph, as standard Markdown has them.                                        | bool                                                                  | False                                       |
+| SpellChecker                    | Enable (true) or disable (false) EasyMDE's own spell checker: US English only, with its dictionary downloaded from a CDN.                                                                                                                             | bool                                                                  | True                                        |
 | TabSize                         | If set, customize the tab size. Defaults to 2.                                                                                                                                                                                                        | int                                                                   | 2                                           |
 | Theme                           | Override the theme. Defaults to easymde.                                                                                                                                                                                                              | string                                                                | easymde                                     |
 | Toolbar                         | [Optional] Gets or sets the content of the toolbar.                                                                                                                                                                                                   | RenderFragment                                                        |                                             |
@@ -481,7 +534,39 @@ Call these via an `@ref` to the `MarkdownEditor` instance.
 | CleanAllAutoSave      | Removes every autosave entry created by the component from `localStorage`.                                                                                                         | `Task CleanAllAutoSave()`              |
 
 ## Upload file
-The Markdown Editor for Blazor can take care of uploading a file and add the relative Markdown code in the editor. For that, the property `UploadImage` has to set to `true`. Also, the upload API must be specified in the property `ImageUploadEndpoint`.
+The Markdown Editor for Blazor can take care of uploading a file and add the relative Markdown code in the editor. For that, the property `UploadImage` has to set to `true`. Also, the upload API must be specified in the property `ImageUploadEndpoint`, unless a `CustomImageUpload` handler stores the image instead (see below).
+
+Images pasted or dropped into the editor are checked in the browser first, against `ImageAccept` and `ImageMaxSize`. The default maximum is 2 MB, which many screenshots exceed: set it to the limit your server enforces.
+
+### Custom upload handler
+
+`CustomImageUpload` lets your own code store the image — in a database, blob storage, anywhere — with no HTTP endpoint. Set `UploadUrl` on the entry to the address the image will be shown from; an exception thrown by the handler becomes the error shown in the editor.
+
+```razor
+<MarkdownEditor @bind-Value="markdownValue"
+                UploadImage="true"
+                ImageMaxSize="8388608"
+                CustomImageUpload="StoreImageAsync" />
+
+@code {
+    private async Task<FileEntry> StoreImageAsync(MarkdownEditor editor, FileEntry file)
+    {
+        var bytes = Convert.FromBase64String(file.ContentBase64);
+        var id = await images.SaveAsync(file.Name, bytes);
+
+        file.UploadUrl = $"/images/{id}";
+        return file;
+    }
+}
+```
+
+In **Blazor Server** the image travels to the server over the SignalR connection as base64 — about 4/3 of its size — in one message, and the hub refuses messages over 32 KB by default. Raise the limit to match `ImageMaxSize`:
+
+```csharp
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddHubOptions(options => options.MaximumReceiveMessageSize = 8 * 1024 * 1024 * 4 / 3 + 64 * 1024);
+```
 In some cases, the API requires an authentication. The properties `ImageUploadAuthenticationSchema` and `ImageUploadAuthenticationToken` allow you to pass the correct schema and token to use in the call.
 
 Those values will be added to the `HttpClient` `POST` request in the header. Only if both properties are not null, they will be added to the header.
@@ -519,7 +604,7 @@ horizontal-rule | drawHorizontalRule | Insert Horizontal Line<br>fa fa-minus
 preview | togglePreview | Toggle Preview<br>fa fa-eye no-disable
 side-by-side | toggleSideBySide | Toggle Side by Side<br>fa fa-columns no-disable no-mobile
 fullscreen | toggleFullScreen | Toggle Fullscreen<br>fa fa-arrows-alt no-disable no-mobile
-guide | [This link](https://www.markdownguide.org/basic-syntax/) | Markdown Guide<br>fa fa-question-circle
+guide | [This link](https://www.markdownguide.org/basic-syntax/) (override with `MarkdownUrl` — see [Customise the Markdown Guide URL](#customise-the-markdown-guide-url)) | Markdown Guide<br>fa fa-question-circle
 
 ## Keyboard shortcuts
 

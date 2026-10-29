@@ -12,15 +12,15 @@
     <RepositoryUrl>https://github.com/erossini/BlazorMarkdownEditor</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>blazor, blazor-webassembly, blazor-server</PackageTags>
-    <PackageReleaseNotes>Add functions to delete clear data created by Markdown Editor</PackageReleaseNotes>
+    <PackageReleaseNotes>10.0.4: Forward the MarkdownUrl parameter to EasyMDE's native markdownUrl option in markdownEditor.js. The parameter has been declared on the component since the start but the JS wrapper never wired it through to the EasyMDE constructor, so the toolbar Help button always opened markdownguide.org regardless of what the consumer set. Set MarkdownUrl="https://your-host/your-guide" on any MarkdownEditor instance to point its Help button at your own markdown reference.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://www.puresourcecode.com/dotnet/blazor/markdown-editor-component-for-blazor/</PackageProjectUrl>
     <Copyright>Enrico Rossini - PureSourceCode.com</Copyright>
     <Title>Markdown Editor for Blazor</Title>
     <PackageId>PSC.Blazor.Components.MarkdownEditor</PackageId>
-    <Version>1.0.0</Version>
+    <Version>10.0.4</Version>
     <Product>PSC Blazor Components</Product>
-    <PackageLicenseExpression>LicenseRef-Commercial</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   
@@ -29,8 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.6" />
-    <PackageReference Include="PSC.Blazor.Components.Common" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>

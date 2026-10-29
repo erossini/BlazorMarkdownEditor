@@ -1,4 +1,43 @@
-﻿/* ===== Bootstrap Icons in EasyMDE toolbar ===== */
+﻿/* ===== Caret / line-measurement stability =====
+   EasyMDE's stylesheet sets `.CodeMirror { font: inherit }`, which lets the
+   host page's responsive / web-font line-height leak into CodeMirror's line
+   measurement. When that desyncs, the caret is drawn the full height of a
+   wrapped paragraph and the editor scrolls past it (the caret disappears
+   while lines keep moving). Pinning an explicit, unitless line-height makes
+   every line — wrapped or not — measure identically. */
+.EasyMDEContainer .CodeMirror,
+.EasyMDEContainer .CodeMirror pre.CodeMirror-line,
+.EasyMDEContainer .CodeMirror pre.CodeMirror-line-like {
+    line-height: 1.6;
+}
+
+/* Heading lines use `calc(rem + vw)` font sizes that balloon on wide
+   viewports (and with a large host root font-size), producing an oversized
+   caret on `#` / `##` / `###` lines. Cap them to viewport-independent sizes
+   relative to the editor's own font. */
+.EasyMDEContainer .cm-s-easymde .cm-header-1 { font-size: 1.6em; }
+.EasyMDEContainer .cm-s-easymde .cm-header-2 { font-size: 1.4em; }
+.EasyMDEContainer .cm-s-easymde .cm-header-3 { font-size: 1.25em; }
+.EasyMDEContainer .cm-s-easymde .cm-header-4 { font-size: 1.1em; }
+
+/* ===== Caret height on wrapped lines =====
+   CodeMirror wraps every line's text in <span>s and calls getClientRects()
+   on them to detect where wrapped rows break — it relies on an inline span
+   returning one rect per visual row. A host page that ships a global
+   `span { display: inline-block }` rule (e.g. Bootstrap-based news/blog
+   themes) breaks that: an inline-block span returns a single merged box, so
+   CodeMirror measures every wrapped line as one tall row. The caret is then
+   drawn the full height of the wrapped paragraph and the internal scroll
+   math desyncs (the caret slides out of view while lines keep scrolling).
+   Pinning the line spans back to `display: inline` restores correct per-row
+   measurement. The selector is specific enough to win over a bare
+   `span { ... }` host rule without !important. */
+.EasyMDEContainer .CodeMirror pre.CodeMirror-line span,
+.EasyMDEContainer .CodeMirror pre.CodeMirror-line-like span {
+    display: inline;
+}
+
+/* ===== Bootstrap Icons in EasyMDE toolbar ===== */
 .editor-toolbar button.bi::before {
 	font-family: "bootstrap-icons" !important;
 	font-style: normal;

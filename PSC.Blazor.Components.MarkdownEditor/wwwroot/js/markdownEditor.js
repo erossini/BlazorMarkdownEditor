@@ -3,6 +3,13 @@
 function initialize(dotNetObjectRef, element, elementId, options) {
     const instances = _instances;
 
+    // The page the editor was drawn on may be gone by the time this runs: opened and left again before
+    // the scripts had loaded. With no textarea there is nothing to start, and starting anyway threw from
+    // here ("reading 'on'"), which ended the whole Blazor circuit of the application using it.
+    if (!document.getElementById(elementId)) {
+        return;
+    }
+
     if (!options.toolbar) {
         // remove empty toolbar so that we can fallback to the default items
         delete options.toolbar;
@@ -81,8 +88,16 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         hideIcons: options.hideIcons,
         showIcons: options.showIcons,
         renderingConfig: {
-            singleLineBreaks: false,
+            // A single line break is a <br> in the preview only when asked for (SingleLineBreaks);
+            // otherwise lines run on into one paragraph, as standard Markdown has them.
+            singleLineBreaks: options.singleLineBreaks === true,
             codeSyntaxHighlighting: false,
+            // Render raw HTML (e.g. video <iframe> embeds) in the preview as-is.
+            // EasyMDE's default sanitizer strips iframes, so embedded YouTube/Vimeo
+            // videos vanished from the preview even though they render fine on the
+            // published page (Markdig passes the same HTML through). Returning the
+            // HTML unchanged keeps the preview faithful to the final article.
+            sanitizerFunction: function (html) { return html; },
             markedOptions: {
                 // hljs themes target `.hljs` on the <code> element; the
                 // `language-xxx` suffix keeps marked's standard class too.
@@ -136,8 +151,27 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         direction: options.direction,
         toolbar: options.toolbar,
         toolbarTips: options.toolbarTips,
+        // EasyMDE's native option for overriding the toolbar Help button URL
+        // (https://github.com/Ionaru/easy-markdown-editor#options-list — search
+        // "markdownUrl"). The wrapper has accepted MarkdownUrl as a [Parameter]
+        // for years and the C# side has always sent it inside the JS options
+        // bag, but this one constructor line was never written — so the
+        // parameter was silently dropped on the floor and consumers' Help
+        // buttons always opened markdownguide.org. Forwarding it now wires the
+        // parameter end-to-end:
+        //   MarkdownEditor.razor.cs MarkdownUrl
+        //     → JSModule.Initialize options.markdownUrl
+        //     → EasyMDE constructor markdownUrl
+        //     → toolbarBuiltInButtons.guide.action
+        markdownUrl: options.markdownUrl,
         spellChecker: options.spellChecker,
-        nativeSpellcheck: options.nativeSpellcheck,
+        // The C# side sends NativeSpellChecker, which arrives as nativeSpellChecker; this line read
+        // nativeSpellcheck, so the parameter was never seen and the browser's spell checker was always
+        // on. Both spellings are read, the C# one first.
+        nativeSpellcheck: options.nativeSpellChecker ?? options.nativeSpellcheck,
+        // Only contenteditable lets the browser's spell checker see the text. Left out when not
+        // given, so EasyMDE goes on choosing by itself (contenteditable on a phone, textarea elsewhere).
+        ...(options.inputStyle ? { inputStyle: options.inputStyle } : {}),
 
         autosave: options.autoSave,
 
@@ -161,6 +195,25 @@ function initialize(dotNetObjectRef, element, elementId, options) {
         }
     });
 
+    // EasyMDE/CodeMirror measures every line's height once, synchronously,
+    // at construction time. EasyMDE's own stylesheet sets
+    // `.CodeMirror { font: inherit }`, so when the host page renders the
+    // editor with a custom/web font (as the LIU site does) those first
+    // measurements are taken against the *fallback* font and are never
+    // recomputed when the real font swaps in. The stale metrics are what
+    // make the caret balloon to the full height of a wrapped paragraph and
+    // desync the internal scroll height — the caret slides out of view
+    // while the lines keep scrolling. Re-measuring once the layout has
+    // settled, and again once the fonts are ready, rebinds CodeMirror's
+    // measurements to what is actually on screen.
+    function refreshEditor() {
+        try { easyMDE.codemirror.refresh(); } catch (e) { /* instance disposed */ }
+    }
+    setTimeout(refreshEditor, 0);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(refreshEditor);
+    }
+
     // Ensure the EasyMDEContainer shows a native resize grip AND that the
     // CodeMirror leaves room for the toolbar + statusbar inside the clipped
     // container (otherwise the statusbar is pushed off until the first drag).
@@ -182,7 +235,16 @@ function initialize(dotNetObjectRef, element, elementId, options) {
 
             if (options.maxHeight) {
                 container.style.height = options.maxHeight;
+                // EasyMDE's maxHeight handling pins the scroller with BOTH an inline
+                // height AND an inline min-height (both = maxHeight). We size the
+                // editor ourselves from the container below, so clear both. Leaving
+                // min-height in place keeps the scroller stuck at maxHeight even
+                // after setSize shrinks the wrapper to fit the toolbar + statusbar —
+                // CodeMirror then thinks its viewport is taller than the visible
+                // area, so the caret slides into the clipped strip below the editor
+                // and "disappears" as you arrow down.
                 cm.getScrollerElement().style.height = '';
+                cm.getScrollerElement().style.minHeight = '';
             }
             cmWrapper.style.height = 'auto';
 
@@ -250,26 +312,28 @@ function initialize(dotNetObjectRef, element, elementId, options) {
     dotNetObjectRef.invokeMethodAsync("UpdateInternalValue", text, easyMDE.options.previewRender(text));
 }
 
+// Kept because the C# side still calls it; the resizer it once started is gone, and EasyMDE's own
+// resize handle (the Resize parameter) does the job. Nothing here needs jQuery any more.
 function allowResize(id) {
-    $(document).ready(function () {
-        //$('#' + id + '.resizable:not(.processed)').TextAreaResizer();
-    });
 }
 
+// EasyMDE keeps a draft under "smde_" + its autosave id.
 function deleteAutoSave(id) {
-    $.each(localStorage, function (key, str) {
-        if (key.startsWith('smde_' + id)) {
-            localStorage.removeItem("smde_" + id);
-        }
-    });
+    try {
+        localStorage.removeItem('smde_' + id);
+    } catch {
+        // Storage refused (a private window, blocked site data): there is no draft to remove.
+    }
 }
 
 function deleteAllAutoSave() {
-    $.each(localStorage, function (key, str) {
-        if (key.startsWith('smde_')) {
-            localStorage.removeItem(key);
-        }
-    });
+    try {
+        Object.keys(localStorage)
+            .filter(key => key.startsWith('smde_'))
+            .forEach(key => localStorage.removeItem(key));
+    } catch {
+        // As above: nothing kept, nothing to remove.
+    }
 }
 
 /**

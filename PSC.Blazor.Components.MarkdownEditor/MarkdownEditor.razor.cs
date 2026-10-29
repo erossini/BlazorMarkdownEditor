@@ -265,10 +265,14 @@ namespace PSC.Blazor.Components.MarkdownEditor
 
         /// <summary>
         /// A comma-separated list of mime-types used to check image type before upload (note: never trust client, always
-        /// check file types at server-side). Defaults to image/png, image/jpeg.
+        /// check file types at server-side). Defaults to image/png, image/jpeg, image/jpg, image/gif, image/webp.
         /// </summary>
+        /// <remarks>
+        /// Compared with the type the browser reports for the file. A type missing here is refused in the browser, with a
+        /// message in the status bar, before anything reaches .NET.
+        /// </remarks>
         [Parameter]
-        public string ImageAccept { get; set; } = "image/png, image/jpeg, image/jpg, image.gif";
+        public string ImageAccept { get; set; } = "image/png, image/jpeg, image/jpg, image/gif, image/webp";
 
         /// <summary>
         /// CSRF token to include with AJAX call to upload image. For instance used with Django backend.
@@ -280,6 +284,12 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// Maximum image size in bytes, checked before upload (note: never trust client, always check image
         /// size at server-side). Defaults to 1024*1024*2 (2Mb).
         /// </summary>
+        /// <remarks>
+        /// A screenshot from a high-resolution screen is often larger than 2 MB: set this to the limit the server
+        /// enforces. In Blazor Server the image crosses the SignalR connection as base64, about 4/3 of its size, in a
+        /// single message, so the hub's <c>MaximumReceiveMessageSize</c> (32 KB by default) must be raised to match —
+        /// for example <c>options.MaximumReceiveMessageSize = ImageMaxSize * 4 / 3 + 64 * 1024</c>.
+        /// </remarks>
         [Parameter]
         public long ImageMaxSize { get; set; } = 1024 * 1024 * 2;
 
@@ -314,6 +324,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// The endpoint where the images data will be sent, via an asynchronous POST request. The server is supposed to
         /// save this image, and return a json response.
         /// </summary>
+        /// <remarks>
+        /// Not needed when <see cref="CustomImageUpload"/> is set: the custom handler stores the image instead.
+        /// </remarks>
         [Parameter]
         public string ImageUploadEndpoint { get; set; }
 
@@ -352,7 +365,9 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </summary>
         /// <remarks>
         /// This defines a custom image upload handler. It passes the instance of the markdown editor 
-        /// So, the dev can still specify progress using MarkdownEditor.ImageUploadProgressed
+        /// So, the dev can still specify progress using MarkdownEditor.ImageUploadProgressed.
+        /// The handler sets <see cref="FileEntry.UploadUrl"/> to the address the image is shown from; an exception it
+        /// throws becomes the error message shown in the editor. <see cref="ImageUploadEndpoint"/> is not needed.
         /// </remarks>
         /// <value>
         /// The custom image upload.
@@ -407,6 +422,23 @@ namespace PSC.Blazor.Components.MarkdownEditor
         /// </value>
         [Parameter]
         public bool NativeSpellChecker { get; set; } = true;
+
+        /// <summary>
+        /// How the editor takes typing. The browser's spell checker underlines misspelt words only with
+        /// <see cref="MarkdownInputStyle.ContentEditable"/>, which EasyMDE chooses by itself only on a phone or
+        /// tablet: set it to have spelling checked on a computer too, with <see cref="NativeSpellChecker"/> on.
+        /// Read when the editor starts; changing it afterwards has no effect until the editor is created again.
+        /// </summary>
+        [Parameter]
+        public MarkdownInputStyle InputStyle { get; set; } = MarkdownInputStyle.Automatic;
+
+        /// <summary>
+        /// Whether a single line break in the text is a line break in the preview (and in the HTML given to
+        /// <c>ValueHTMLChanged</c>), as GitHub renders comments. Off by default, as standard Markdown has it:
+        /// lines with no blank line between them run on into one paragraph.
+        /// </summary>
+        [Parameter]
+        public bool SingleLineBreaks { get; set; }
 
         /// <summary>
         /// Sets the minimum height for the composition area, before it starts auto-growing.
@@ -622,8 +654,8 @@ namespace PSC.Blazor.Components.MarkdownEditor
             if (ImageUploadChanged is not null)
                 await ImageUploadChanged.Invoke(new(file));
 
-            if (string.IsNullOrEmpty(ImageUploadEndpoint))
-                await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
+            // Whether the image can be uploaded is decided, and reported, once: by UploadFile. Reporting a missing
+            // endpoint here as well failed every upload made through CustomImageUpload, which needs none.
 
             await InvokeAsync(StateHasChanged);
         }
@@ -763,11 +795,19 @@ namespace PSC.Blazor.Components.MarkdownEditor
         {
             bool success = false;
 
+            // Each refusal is reported and ends the upload: carrying on would try to decode or send a file that is
+            // not there, and report a second, less helpful error over the first.
             if (fileInfo is null || string.IsNullOrEmpty(fileInfo.ContentBase64))
+            {
                 await JSModule.NotifyImageUploadError(ElementId, $"Can't upload an empty file");
+                return;
+            }
 
-            if (string.IsNullOrEmpty(ImageUploadEndpoint))
+            if (CustomImageUpload is null && string.IsNullOrEmpty(ImageUploadEndpoint))
+            {
                 await JSModule.NotifyImageUploadError(ElementId, $"The property ImageUploadEndpoint is not specified.");
+                return;
+            }
 
             if (ImageUploadStarted is not null)
                 await ImageUploadStarted.Invoke(new(fileInfo));
@@ -942,7 +982,14 @@ namespace PSC.Blazor.Components.MarkdownEditor
                     Theme,
                     Direction,
                     NativeSpellChecker,
+                    InputStyle = InputStyle switch
+                    {
+                        MarkdownInputStyle.Textarea => "textarea",
+                        MarkdownInputStyle.ContentEditable => "contenteditable",
+                        _ => null
+                    },
                     SpellChecker,
+                    SingleLineBreaks,
                     StatusTexts = new
                     {
                         Autosave = AutoSaveText,
